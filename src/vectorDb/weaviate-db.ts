@@ -38,6 +38,10 @@ export class WeaviateDb implements BaseDb {
                         dataType: ['text'],
                     },
                     {
+                        name: 'uniqueLoaderId',
+                        dataType: ['text'],
+                    },
+                    {
                         name: 'source',
                         dataType: ['text'],
                     },
@@ -68,7 +72,7 @@ export class WeaviateDb implements BaseDb {
                             id: generateUuid5(chunkId),
                             vector: chunk.vector,
                             properties: {
-                                realId: chunkId,
+                                uniqueLoaderId: chunk.metadata.uniqueLoaderId,
                                 pageContent: chunk.pageContent,
                                 ...chunk.metadata,
                             },
@@ -92,7 +96,7 @@ export class WeaviateDb implements BaseDb {
             .get()
             .withClassName(this.className)
             .withNearVector({ vector: query })
-            .withFields('realId pageContent source')
+            .withFields('uniqueLoaderId pageContent source')
             .withLimit(k)
             .do();
 
@@ -117,16 +121,17 @@ export class WeaviateDb implements BaseDb {
         return queryResponse.data.Aggregate[this.className][0].meta.count;
     }
 
-    async deleteKeys(keys: string[]): Promise<void> {
+    async deleteKeys(uniqueLoaderId: string): Promise<boolean> {
         await this.client.batch
             .objectsBatchDeleter()
             .withClassName(this.className)
             .withWhere({
-                path: ['realId'],
+                path: ['uniqueLoaderId'],
                 operator: 'ContainsAny',
-                valueTextArray: keys,
+                valueTextArray: [uniqueLoaderId],
             })
             .do();
+        return true;
     }
 
     async reset(): Promise<void> {

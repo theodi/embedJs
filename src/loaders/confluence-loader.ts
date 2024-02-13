@@ -10,6 +10,7 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
     private readonly debug = createDebugMessages('embedjs:loader:ConfluenceLoader');
 
     private readonly confluence: ConfluenceClient;
+    private readonly confluenceBaseUrl: string;
     private readonly spaceNames: string[];
 
     constructor({
@@ -26,8 +27,10 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
         super(`ConfluenceLoader_${md5(spaceNames.join(','))}`);
 
         this.spaceNames = spaceNames;
+        this.confluenceBaseUrl = confluenceBaseUrl ?? process.env.CONFLUENCE_BASE_URL;
+
         this.confluence = new ConfluenceClient({
-            host: confluenceBaseUrl ?? process.env.CONFLUENCE_BASE_URL,
+            host: this.confluenceBaseUrl,
             authentication: {
                 basic: {
                     username: confluenceUsername ?? process.env.CONFLUENCE_USER_NAME,
@@ -48,7 +51,6 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
                 );
 
                 for await (const result of this.getContentChunks(spaceContent['page'].results)) {
-                    result.metadata['chunkId'] = i;
                     yield result;
                     i++;
                 }
@@ -66,12 +68,7 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
                 expand: ['body', 'children.page', 'body.view'],
             });
 
-            if (content.children) {
-                for await (const result of this.getContentChunks(content.children.page.results)) {
-                    yield result;
-                }
-            }
-
+            if (!content.body.view.value) continue;
             const webLoader = new WebLoader({ content: content.body.view.value });
             for await (const result of await webLoader.getChunks()) {
                 yield {
@@ -79,9 +76,15 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
                     contentHash: result.contentHash,
                     metadata: {
                         type: <'ConfluenceLoader'>'ConfluenceLoader',
-                        source: content.title,
+                        source: `${this.confluenceBaseUrl}/wiki${content._links.webui}`,
                     },
                 };
+            }
+
+            if (content.children) {
+                for await (const result of this.getContentChunks(content.children.page.results)) {
+                    yield result;
+                }
             }
         }
     }

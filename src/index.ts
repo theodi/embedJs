@@ -1,5 +1,5 @@
-import { LLMApplication } from './core/llm-application.js';
-import { LLMApplicationBuilder } from './core/llm-application-builder.js';
+import { RAGApplication } from './core/rag-application.js';
+import { RAGApplicationBuilder } from './core/rag-application-builder.js';
 import { TextLoader } from './loaders/text-loader.js';
 import { YoutubeLoader } from './loaders/youtube-loader.js';
 import { PdfLoader } from './loaders/pdf-loader.js';
@@ -16,16 +16,17 @@ import { BaseModel } from './interfaces/base-model.js';
 import { SIMPLE_MODELS } from './global/constants.js';
 import { OpenAi } from './models/openai-model.js';
 import { OpenAiMod } from './models/openai-model-mod.js';
-import { HuggingFace } from './models/huggingface-model.js';
 import { ConfluenceLoader } from './loaders/confluence-loader.js';
 import { AdaEmbeddings } from './embeddings/ada-embeddings.js';
 import { CohereEmbeddings } from './embeddings/cohere-embeddings.js';
 import { OpenAi3LargeEmbeddings } from './embeddings/openai-3large-embeddings.js';
 import { OpenAi3SmallEmbeddings } from './embeddings/openai-3small-embeddings.js';
+import { Mistral } from './models/mistral-model.js';
+import { HuggingFace } from './models/huggingface-model.js';
 
 export {
-    LLMApplication,
-    LLMApplicationBuilder,
+    RAGApplication,
+    RAGApplicationBuilder,
     TextLoader,
     YoutubeLoader,
     PdfLoader,
@@ -41,11 +42,12 @@ export {
     ConfluenceLoader,
     BaseModel,
     SIMPLE_MODELS,
-    HuggingFace,
     OpenAi,
     OpenAiMod,
     AdaEmbeddings,
     CohereEmbeddings,
     OpenAi3LargeEmbeddings,
     OpenAi3SmallEmbeddings,
+    Mistral,
+    HuggingFace,
 };

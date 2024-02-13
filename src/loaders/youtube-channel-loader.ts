@@ -20,7 +20,6 @@ export class YoutubeChannelLoader extends BaseLoader<{ type: 'YoutubeChannelLoad
             this.debug(`Channel '${this.channelId}' returned ${videos.length} videos`);
             const videoIds = videos.map((v) => v.id);
 
-            let i = 0;
             for (const videoId of videoIds) {
                 const youtubeLoader = new YoutubeLoader({ videoIdOrUrl: videoId });
 
@@ -30,12 +29,9 @@ export class YoutubeChannelLoader extends BaseLoader<{ type: 'YoutubeChannelLoad
                         metadata: {
                             ...chunk.metadata,
                             type: <'YoutubeChannelLoader'>'YoutubeChannelLoader',
-                            source: this.channelId,
-                            chunkId: i,
+                            originalSource: this.channelId,
                         },
                     };
-
-                    i++;
                 }
             }
         } catch (e) {

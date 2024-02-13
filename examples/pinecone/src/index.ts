@@ -2,17 +2,28 @@ import 'dotenv/config';
 import * as path from 'node:path';
 import { fileURLToPath } from 'url';
 
-import { LLMApplicationBuilder, PdfLoader, TextLoader, YoutubeLoader } from '../../../src/index.js';
+import { RAGApplicationBuilder, PdfLoader, TextLoader, YoutubeLoader } from '../../../src/index.js';
 import { PineconeDb } from '../../../src/vectorDb/pinecone-db.js';
 import { LmdbCache } from '../../../src/cache/lmdb-cache.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const llmApplication = await new LLMApplicationBuilder()
+const llmApplication = await new RAGApplicationBuilder()
     .addLoader(new PdfLoader({ filePath: path.resolve('../paxos-simple.pdf') }))
     .addLoader(new YoutubeLoader({ videoIdOrUrl: 'https://www.youtube.com/watch?v=w2KbwC-s7pY' }))
     .addLoader(new TextLoader({ text: 'The best company name for a company making colorful socks is MrSocks' }))
     .setCache(new LmdbCache({ path: path.resolve(path.dirname(__filename), '../../../cache') }))
-    .setVectorDb(new PineconeDb({ projectName: 'test', namespace: 'dev' }))
+    .setVectorDb(
+        new PineconeDb({
+            projectName: 'test',
+            namespace: 'dev',
+            indexSpec: {
+                pod: {
+                    podType: 'p1.x1',
+                    environment: 'us-east1-gcp',
+                },
+            },
+        }),
+    )
     .build();
 
 console.log(await llmApplication.query('What is paxos?'));

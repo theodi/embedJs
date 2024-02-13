@@ -1,47 +1,59 @@
 import createDebugMessages from 'debug';
-import { HfInference } from '@huggingface/inference';
+import { HuggingFaceInference } from '@langchain/community/llms/hf';
 
-import { Chunk, ConversationHistory } from '../global/types.js';
 import { BaseModel } from '../interfaces/base-model.js';
+import { Chunk, ConversationHistory } from '../global/types.js';
 
 export class HuggingFace extends BaseModel {
     private readonly debug = createDebugMessages('embedjs:model:HuggingFace');
 
     private readonly modelName: string;
-    private readonly runtime: HfInference;
+    private readonly maxNewTokens: number;
+    private readonly endpointUrl?: string;
+    private model: HuggingFaceInference;
 
-    constructor(temperature: number, accessToken: string, modelName: string) {
-        super(temperature);
+    constructor(params?: { modelName?: string; temperature?: number; maxNewTokens?: number; endpointUrl?: string }) {
+        super(params?.temperature);
 
-        this.modelName = modelName;
-        this.runtime = new HfInference(accessToken);
+        this.endpointUrl = params?.endpointUrl;
+        this.maxNewTokens = params?.maxNewTokens ?? 300;
+        this.modelName = params?.modelName ?? 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+    }
+
+    override async init(): Promise<void> {
+        this.model = new HuggingFaceInference({
+            model: this.modelName,
+            maxTokens: this.maxNewTokens,
+            temperature: this.temperature,
+            endpointUrl: this.endpointUrl,
+            verbose: false,
+            maxRetries: 1,
+        });
     }
 
     override async runQuery(
-        prompt: string,
-        _baseQuery: string,
+        system: string,
+        userQuery: string,
         supportingContext: Chunk[],
         pastConversations: ConversationHistory[],
     ): Promise<string> {
-        const pastAiMessages = pastConversations.filter((c) => c.sender === 'AI').map((c) => c.message);
-        const pastUserMessages = pastConversations.filter((c) => c.sender === 'HUMAN').map((c) => c.message);
+        const pastMessages = [system];
+        pastMessages.push(`Data: ${supportingContext.map((s) => s.pageContent).join('; ')}`);
 
-        const finalPrompt = `${prompt} \nSupporting context:\n${supportingContext.map((s) => s.pageContent).join(', ')}`;
-        this.debug('Executing with finalPrompt -', finalPrompt);
+        pastMessages.push.apply(
+            pastConversations.map((c) => {
+                if (c.sender === 'AI') return `AI: ${c.message}`;
+                return `HUMAN: ${c.message}`;
+            }),
+        );
 
-        const result = await this.runtime.conversational({
-            model: this.modelName,
-            inputs: {
-                text: finalPrompt,
-                generated_responses: pastAiMessages,
-                past_user_inputs: pastUserMessages,
-            },
-            parameters: {
-                temperature: this.temperature,
-            },
-        });
+        pastMessages.push(`Question: ${userQuery}?`);
+        pastMessages.push('Answer: ');
 
-        this.debug('Warnings produced', result.warnings);
-        return result.generated_text;
+        const finalPrompt = pastMessages.join('\n');
+        // this.debug('Final prompt being sent to HF - ', finalPrompt);
+        this.debug(`Executing hugging face '${this.model.model}' model with prompt -`, userQuery);
+        const result = await this.model.invoke(finalPrompt, {});
+        return result;
     }
 }

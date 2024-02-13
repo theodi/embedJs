@@ -22,7 +22,6 @@ export class YoutubeSearchLoader extends BaseLoader<{ type: 'YoutubeSearchLoader
             );
             const channelIds = channels.map((c) => c.channel_id);
 
-            let i = 0;
             for (const channelId of channelIds) {
                 const youtubeLoader = new YoutubeChannelLoader({ channelId });
 
@@ -32,13 +31,10 @@ export class YoutubeSearchLoader extends BaseLoader<{ type: 'YoutubeSearchLoader
                         metadata: {
                             ...chunk.metadata,
                             type: <'YoutubeSearchLoader'>'YoutubeSearchLoader',
-                            source: this.searchString,
-                            chunkId: i,
+                            originalSource: this.searchString,
                         },
                     };
                 }
-
-                i++;
             }
         } catch (e) {
             this.debug('Could not search for string', this.searchString, e);
