@@ -36,24 +36,29 @@ export class HuggingFace extends BaseModel {
         userQuery: string,
         supportingContext: Chunk[],
         pastConversations: ConversationHistory[],
-    ): Promise<string> {
+    ): Promise<any> {
         const pastMessages = [system];
         pastMessages.push(`Data: ${supportingContext.map((s) => s.pageContent).join('; ')}`);
 
-        pastMessages.push.apply(
-            pastConversations.map((c) => {
-                if (c.sender === 'AI') return `AI: ${c.message}`;
-                return `HUMAN: ${c.message}`;
-            }),
-        );
+        // pastMessages.push.apply(
+        //     pastConversations.map((c) => {
+        //         if (c.sender === 'AI') return `AI: ${c.message}`;
+        //         return `HUMAN: ${c.message}`;
+        //     }),
+        // );
 
-        pastMessages.push(`Question: ${userQuery}?`);
-        pastMessages.push('Answer: ');
+        // pastMessages.push(`Question: ${userQuery}?`);
+        // pastMessages.push('Answer: ');
+
+        pastMessages.push(`${userQuery}`);
 
         const finalPrompt = pastMessages.join('\n');
         // this.debug('Final prompt being sent to HF - ', finalPrompt);
         this.debug(`Executing hugging face '${this.model.model}' model with prompt -`, userQuery);
         const result = await this.model.invoke(finalPrompt, {});
-        return result;
+        return {
+            output: result,
+            cost: 0
+        };
     }
 }

@@ -195,14 +195,18 @@ export class RAGApplication {
         conversationId?: string,
     ): Promise<{
         result: string;
+        cost: number;
         sources: string[];
     }> {
         const context = await this.getContext(userQuery);
         const sources = [...new Set(context.map((chunk) => chunk.metadata.source))];
 
+        var result = await this.model.query(this.queryTemplate, userQuery, context, conversationId)
+
         return {
             sources,
-            result: await this.model.query(this.queryTemplate, userQuery, context, conversationId),
+            result: result.output,
+            cost: result.cost
         };
     }
 }

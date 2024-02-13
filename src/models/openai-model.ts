@@ -24,7 +24,7 @@ export class OpenAi extends BaseModel {
         userQuery: string,
         supportingContext: Chunk[],
         pastConversations: ConversationHistory[],
-    ): Promise<string> {
+    ): Promise<any> {
         const pastMessages: (AIMessage | SystemMessage | HumanMessage)[] = [new SystemMessage(system)];
         pastMessages.push(
             new SystemMessage(`Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}`),
@@ -46,6 +46,10 @@ export class OpenAi extends BaseModel {
 
         this.debug('Executing openai model with prompt -', userQuery);
         const result = await this.model.invoke(pastMessages, {});
-        return result.content.toString();
+        return {
+            output: result.content.toString(),
+            cost: 0
+        };
+        
     }
 }

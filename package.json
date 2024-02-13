@@ -58,6 +58,7 @@
         "confluence.js": "^1.7.2",
         "debug": "^4.3.4",
         "html-to-text": "^9.0.5",
+        "js-tiktoken": "^1.0.10",
         "langchain": "^0.1.16",
         "md5": "^2.3.0",
         "pdf-parse-fork": "^1.2.0",

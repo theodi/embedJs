@@ -28,7 +28,7 @@ export abstract class BaseModel {
         userQuery: string,
         supportingContext: Chunk[],
         conversationId: string = 'default',
-    ): Promise<string> {
+    ): Promise<any> {
         if (!this.conversationMap.has(conversationId)) this.conversationMap.set(conversationId, []);
 
         const conversationHistory = this.conversationMap.get(conversationId);
@@ -45,5 +45,5 @@ export abstract class BaseModel {
         userQuery: string,
         supportingContext: Chunk[],
         pastConversations: ConversationHistory[],
-    ): Promise<string>;
+    ): Promise<any>;
 }
