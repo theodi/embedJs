@@ -32,4 +32,8 @@ export class MemoryCache implements BaseCache {
     async loaderCustomHas(loaderCombinedId: string): Promise<boolean> {
         return this.loaderCustomValues.hasOwnProperty(loaderCombinedId);
     }
+
+    async clear(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
 }

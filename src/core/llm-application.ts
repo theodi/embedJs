@@ -158,4 +158,8 @@ export class LLMApplication {
         const context = await this.getContext(userQuery);
         return this.model.query(context.prompt, userQuery, context.supportingContext, conversationId);
     }
+
+    public async clearCache(): Promise<void> {
+        await this.cache.clear();
+    }
 }

@@ -39,4 +39,8 @@ export class LmdbCache implements BaseCache {
     async loaderCustomHas(loaderCombinedId: string): Promise<boolean> {
         return this.database.doesExist(loaderCombinedId);
     }
+
+    async clear(): Promise<void> {
+        await this.database.clearAsync();
+    }
 }

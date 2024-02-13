@@ -7,4 +7,5 @@ export interface BaseCache {
     loaderCustomSet<T extends Record<string, unknown>>(loaderCombinedId: string, value: T): Promise<void>;
     loaderCustomGet<T extends Record<string, unknown>>(loaderCombinedId: string): Promise<T>;
     loaderCustomHas(loaderCombinedId: string): Promise<boolean>;
+    clear(): Promise<void>;
 }

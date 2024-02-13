@@ -43,4 +43,8 @@ export class RedisCache implements BaseCache {
     async loaderCustomHas(loaderCombinedId: string): Promise<boolean> {
         return !!(await this.redis.get(loaderCombinedId));
     }
+
+    async clear(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
 }
