@@ -209,4 +209,8 @@ export class RAGApplication {
             cost: result.cost
         };
     }
+
+    public async clearCache(): Promise<void> {
+        await this.cache.clear();
+    }
 }

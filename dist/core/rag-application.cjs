@@ -206,5 +206,8 @@ class RAGApplication {
             cost: result.cost
         };
     }
+    async clearCache() {
+        await this.cache.clear();
+    }
 }
 exports.RAGApplication = RAGApplication;

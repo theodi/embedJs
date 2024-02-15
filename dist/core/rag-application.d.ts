@@ -28,4 +28,5 @@ export declare class RAGApplication {
         cost: number;
         sources: string[];
     }>;
+    clearCache(): Promise<void>;
 }
