@@ -52,6 +52,7 @@
         "@langchain/cohere": "^0.0.4",
         "@langchain/community": "^0.0.26",
         "@langchain/core": "^0.1.25",
+        "@langchain/google-genai": "^0.0.10",
         "@langchain/mistralai": "^0.0.7",
         "@langchain/openai": "^0.0.14",
         "axios": "^1.6.7",
