@@ -19,6 +19,7 @@ export class Gemini extends BaseModel {
     override async init(): Promise<void> {
         this.model = new ChatGoogleGenerativeAI({
             modelName: this.modelName,
+            temperature: this.temperature,
             maxOutputTokens: 4096,
             safetySettings: [
                 {

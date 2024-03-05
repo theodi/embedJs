@@ -71,11 +71,11 @@ export class OpenAiMod extends BaseModel {
         pastConversations: ConversationHistory[],
     ): Promise<any> {
         const pastMessages: (AIMessage | SystemMessage | HumanMessage)[] = [new SystemMessage(system)];
-        pastMessages.push(
-            new SystemMessage(`Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}`),
-        );
-
-        pastMessages.push(new HumanMessage(`${userQuery}`));
+        var message = `Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}
+###
+${userQuery}`;
+        
+        pastMessages.push(new HumanMessage(message));
 
         this.debug('Executing openai model with prompt -', userQuery);
         const result = await this.model.invoke(pastMessages, {});

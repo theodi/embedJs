@@ -35,6 +35,7 @@ class Gemini extends base_model_js_1.BaseModel {
     async init() {
         this.model = new google_genai_1.ChatGoogleGenerativeAI({
             modelName: this.modelName,
+            temperature: this.temperature,
             maxOutputTokens: 4096,
             safetySettings: [
                 {
