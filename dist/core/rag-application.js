@@ -4,6 +4,7 @@ import { DEFAULT_INSERT_BATCH_SIZE } from '../global/constants.js';
 import { BaseModel } from '../interfaces/base-model.js';
 import { RAGEmbedding } from './rag-embedding.js';
 import { cleanString } from '../util/strings.js';
+import { OpenAi3SmallEmbeddings } from '../index.js';
 export class RAGApplication {
     constructor(llmBuilder) {
         Object.defineProperty(this, "debug", {
@@ -64,7 +65,7 @@ export class RAGApplication {
         this.vectorDb = llmBuilder.getVectorDb();
         this.searchResultCount = llmBuilder.getSearchResultCount();
         this.initLoaders = llmBuilder.getLoaderInit();
-        RAGEmbedding.init(llmBuilder.getEmbeddingModel());
+        RAGEmbedding.init(llmBuilder.getEmbeddingModel() ?? new OpenAi3SmallEmbeddings());
         if (!this.model)
             throw new SyntaxError('Model not set');
         if (!this.vectorDb)

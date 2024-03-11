@@ -39,7 +39,7 @@ class Mistral extends base_model_js_1.BaseModel {
         }));
         pastMessages.push(new messages_1.HumanMessage(`${userQuery}?`));
         this.debug('Executing mistral model with prompt -', userQuery);
-        const result = await this.model.invoke(pastMessages, {});
+        const result = await this.model.invoke(pastMessages);
         return {
             output: result.content.toString(),
             cost: 0

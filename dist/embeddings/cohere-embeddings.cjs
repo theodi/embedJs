@@ -11,6 +11,7 @@ class CohereEmbeddings {
             value: void 0
         });
         this.model = new cohere_1.CohereEmbeddings({
+            model: 'embed-english-v2.0',
             maxConcurrency: 3,
             maxRetries: 5,
         });

@@ -4,7 +4,6 @@ exports.RAGApplicationBuilder = void 0;
 const rag_application_js_1 = require("./rag-application.cjs");
 const constants_js_1 = require("../global/constants.cjs");
 const openai_model_js_1 = require("../models/openai-model.cjs");
-const openai_3small_embeddings_js_1 = require("../embeddings/openai-3small-embeddings.cjs");
 class RAGApplicationBuilder {
     constructor() {
         Object.defineProperty(this, "searchResultCount", {
@@ -64,7 +63,6 @@ class RAGApplicationBuilder {
         this.loaders = [];
         this.temperature = 0.1;
         this.searchResultCount = 7;
-        this.embeddingModel = new openai_3small_embeddings_js_1.OpenAi3SmallEmbeddings();
         this.initLoaders = true;
         this.queryTemplate = `You are a helpful human like chat bot. Use all the provided context to answer the query at the end. Answer in full.
         If you don't know the answer, just say that you don't know, don't try to make up an answer. 

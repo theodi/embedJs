@@ -10,6 +10,7 @@ const constants_js_1 = require("../global/constants.cjs");
 const base_model_js_1 = require("../interfaces/base-model.cjs");
 const rag_embedding_js_1 = require("./rag-embedding.cjs");
 const strings_js_1 = require("../util/strings.cjs");
+const index_js_1 = require("../index.cjs");
 class RAGApplication {
     constructor(llmBuilder) {
         Object.defineProperty(this, "debug", {
@@ -70,7 +71,7 @@ class RAGApplication {
         this.vectorDb = llmBuilder.getVectorDb();
         this.searchResultCount = llmBuilder.getSearchResultCount();
         this.initLoaders = llmBuilder.getLoaderInit();
-        rag_embedding_js_1.RAGEmbedding.init(llmBuilder.getEmbeddingModel());
+        rag_embedding_js_1.RAGEmbedding.init(llmBuilder.getEmbeddingModel() ?? new index_js_1.OpenAi3SmallEmbeddings());
         if (!this.model)
             throw new SyntaxError('Model not set');
         if (!this.vectorDb)

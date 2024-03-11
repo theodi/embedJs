@@ -1,7 +1,6 @@
 import { RAGApplication } from './rag-application.js';
 import { SIMPLE_MODELS } from '../global/constants.js';
 import { OpenAi } from '../models/openai-model.js';
-import { OpenAi3SmallEmbeddings } from '../embeddings/openai-3small-embeddings.js';
 export class RAGApplicationBuilder {
     constructor() {
         Object.defineProperty(this, "searchResultCount", {
@@ -61,7 +60,6 @@ export class RAGApplicationBuilder {
         this.loaders = [];
         this.temperature = 0.1;
         this.searchResultCount = 7;
-        this.embeddingModel = new OpenAi3SmallEmbeddings();
         this.initLoaders = true;
         this.queryTemplate = `You are a helpful human like chat bot. Use all the provided context to answer the query at the end. Answer in full.
         If you don't know the answer, just say that you don't know, don't try to make up an answer. 

@@ -76,8 +76,10 @@ class OpenAiMod extends base_model_js_1.BaseModel {
     }
     async runQuery(system, userQuery, supportingContext, pastConversations) {
         const pastMessages = [new messages_1.SystemMessage(system)];
-        pastMessages.push(new messages_1.SystemMessage(`Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}`));
-        pastMessages.push(new messages_1.HumanMessage(`${userQuery}`));
+        var message = `Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}
+###
+${userQuery}`;
+        pastMessages.push(new messages_1.HumanMessage(message));
         this.debug('Executing openai model with prompt -', userQuery);
         const result = await this.model.invoke(pastMessages, {});
         var output = result.content.toString();
