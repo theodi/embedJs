@@ -63,9 +63,11 @@
         "langchain": "^0.1.25",
         "md5": "^2.3.0",
         "pdf-parse-fork": "^1.2.0",
-        "sitemapper": "^3.1.8",
+        "sitemapper": "github:seantomburke/sitemapper#master",
+        "uuid": "^9.0.1"
+    },
+    "optionalDependencies": {
         "usetube": "^2.0.2",
-        "uuid": "^9.0.1",
         "youtube-transcript": "^1.0.6"
     },
     "devDependencies": {
