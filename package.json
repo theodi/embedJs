@@ -66,10 +66,6 @@
         "sitemapper": "github:seantomburke/sitemapper#master",
         "uuid": "^9.0.1"
     },
-    "optionalDependencies": {
-        "usetube": "^2.0.2",
-        "youtube-transcript": "^1.0.6"
-    },
     "devDependencies": {
         "@pinecone-database/pinecone": "^2.0.1",
         "@qdrant/js-client-rest": "^1.8.0",
