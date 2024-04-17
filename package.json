@@ -1,6 +1,6 @@
 {
     "name": "@llm-tools/embedjs",
-    "version": "0.0.7",
+    "version": "0.0.71",
     "description": "A NodeJS RAG framework to easily work with LLMs and custom datasets",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -146,6 +146,11 @@
             "import": "./dist/vectorDb/lance-db.js",
             "require": "./dist/vectorDb/lance-db.cjs"
         },
+        "./vectorDb/mongoAtlas": {
+            "types": "./dist/vectorDb/mongoAtlas-db.d.ts",
+            "import": "./dist/vectorDb/mongoAtlas-db.js",
+            "require": "./dist/vectorDb/mongoAtlas-db.cjs"
+        },
         "./vectorDb/pinecone": {
             "types": "./dist/vectorDb/pinecone-db.d.ts",
             "import": "./dist/vectorDb/pinecone-db.js",
@@ -175,6 +180,11 @@
             "types": "./dist/cache/lmdb-cache.d.ts",
             "import": "./dist/cache/lmdb-cache.js",
             "require": "./dist/cache/lmdb-cache.cjs"
+        },
+        "./cache/mongo": {
+            "types": "./dist/cache/mongo-cache.d.ts",
+            "import": "./dist/cache/mongo-cache.js",
+            "require": "./dist/cache/mongo-cache.cjs"
         },
         "./cache/memory": {
             "types": "./dist/cache/memory-cache.d.ts",
