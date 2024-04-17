@@ -91,6 +91,7 @@ The author(s) are looking to add core maintainers for this opensource project. R
 -   [Caches](#caches)
     -   [Redis](#redis)
     -   [LMDB File](#lmdb)
+    -   [Mongo DB](#mongodb)
     -   [In memory cache](#inmemory)
     -   [Custom cache implementation](#bring-your-own-cache)
     -   [How to request new cache providers](#more-caches-coming-soon)
@@ -753,6 +754,33 @@ await new RAGApplicationBuilder()
 ```
 
 **Note:** The `path` property will be used by the LMDB driver to create a folder housing the LMDB database files.
+
+Here's the updated README section for using the MongoDB cache:
+
+## MongoDB
+
+You can utilize [MongoDB](https://www.mongodb.com/) as a cache provider to store values in a MongoDB database.
+
+- Install MongoDB package in your project
+
+```bash
+npm install mongodb
+```
+
+- Set `MongoCache` as your cache provider on `RAGApplicationBuilder`
+
+```TS
+import { MongoClient } from 'mongodb';
+
+await new RAGApplicationBuilder()
+    .setCache(new MongoCache({
+    uri: MONGODB_URI,
+    dbName: DB_NAME,
+    collectionName: CACHE_COLLECTION_NAME
+})
+```
+
+**Note:** You can use the same Mongo URI and Database as for your vectors, just with a different collection name.
 
 ## InMemory
 
