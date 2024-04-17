@@ -3,7 +3,8 @@
     "compilerOptions": {
         "module": "commonjs",
         "moduleResolution": "Node10",
-        "declaration": false
+        "declaration": false,
+	"outDir": "./dist-cjs"
     },
     "exclude": ["node_modules", "dist", "docs", "**/tests"]
 }

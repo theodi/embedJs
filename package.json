@@ -6,13 +6,7 @@
     "types": "dist/index.d.ts",
     "type": "module",
     "scripts": {
-        "build": "npm run clean && npm run build:esm && npm run build:cjs",
-        "build:local": "npm run build:esm && npm run build:cjs",
-        "clean": "rimraf dist/",
-        "build:esm": "tsc --outDir dist/",
-        "build:cjs": "tsc --outDir dist-cjs/ -p tsconfig.cjs.json && node scripts/move-cjs-to-dist.js && rimraf dist-cjs",
-        "prepublishOnly": "npm run build",
-        "tsc": "tsc --noEmit --pretty"
+        "build": "rm -fR dist && tsc && tsc -p tsconfig.cjs.json && cd scripts && node move-cjs-to-dist.js && cd .. && rm -rf dist-cjs"
     },
     "repository": {
         "type": "git",
@@ -52,9 +46,9 @@
         "@langchain/cohere": "^0.0.5",
         "@langchain/community": "^0.0.35",
         "@langchain/core": "^0.1.42",
+        "@langchain/google-genai": "^0.0.10",
         "@langchain/mistralai": "^0.0.10",
         "@langchain/openai": "^0.0.16",
-        "@langchain/google-genai": "^0.0.10",
         "axios": "^1.6.7",
         "confluence.js": "^1.7.3",
         "debug": "^4.3.4",
@@ -62,6 +56,7 @@
         "js-tiktoken": "^1.0.10",
         "langchain": "^0.1.25",
         "md5": "^2.3.0",
+        "mongodb": "^6.5.0",
         "pdf-parse-fork": "^1.2.0",
         "sitemapper": "github:seantomburke/sitemapper#master",
         "uuid": "^9.0.1"

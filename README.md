@@ -16,7 +16,6 @@ Here's an example of how easy it is to get started -
 
 ```TS
 const ragApplication = await new RAGApplicationBuilder()
-    .addLoader(new YoutubeSearchLoader({ searchString: 'Tesla cars' }))
     .addLoader(new SitemapLoader({ url: 'https://tesla-info.com/sitemap.xml' }))
     .addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }))
     .setVectorDb(new LanceDb({ path: '.db' }))
@@ -54,20 +53,21 @@ The author(s) are looking to add core maintainers for this opensource project. R
     -   [Search results count](#search-results-count)
     -   [Customize the prompt](#customize-the-prompt)
     -   [Dry run](#get-context)
--   [Loaders supported](#loaders-supported)
+-   [Loaders](#loaders-supported)
     -   [PDF](#pdf-file)
-    -   [Youtube](#youtube-video)
-    -   [Youtube channels](#youtube-channel)
-    -   [Youtube search](#youtube-search)
     -   [Web page](#web-page)
     -   [Confluence](#confluence)
     -   [Sitemap](#sitemap)
     -   [Text](#text)
+    -   [Youtube](#youtube-video)
+    -   [Youtube channels](#youtube-channel)
+    -   [Youtube search](#youtube-search)
     -   [Custom loader](#add-a-custom-loader)
     -   [How to request more loaders](#more-loaders-coming-soon)
 -   [LLMs](#llms)
     -   [OpenAI](#openai)
     -   [Mistral](#mistral)
+    -   [Gemini](#gemini)
     -   [Hugging Face](#hugging-face)
     -   [Azure OpenAI](#azure-openai)
     -   [Bring your own LLMs](#use-custom-llm-model)
@@ -82,6 +82,7 @@ The author(s) are looking to add core maintainers for this opensource project. R
 -   [Vector databases supported](#vector-databases-supported)
     -   [Pinecone](#pinecone)
     -   [LanceDB](#lancedb)
+    -   [MongoDBAltas](#mongodbatlas)
     -   [Chroma](#chroma)
     -   [HNSWLib](#hnswlib)
     -   [Weaviate](#weaviate)
@@ -204,30 +205,6 @@ await ragApplication.getEmbeddingsCount()
 
 Loaders take a specific format, process the input and create chunks of the data. Currently, the library supports the following formats -
 
-## Youtube video
-
-To add any youtube video to your app, use `YoutubeLoader`.
-
-```TS
-.addLoader(new YoutubeLoader({ videoIdOrUrl: 'w2KbwC-s7pY' }))
-```
-
-## Youtube channel
-
-To add all videos in a youtube channel, use `YoutubeChannelLoader`.
-
-```TS
-.addLoader(new YoutubeChannelLoader({ channelId: '...' }))
-```
-
-## Youtube search
-
-To do a general youtube search and add the popular search results, use `YoutubeSearchLoader`.
-
-```TS
-.addLoader(new YoutubeSearchLoader({ searchString: '...' }))
-```
-
 ## PDF file
 
 To add a pdf file, use `PdfLoader`. You can add a local file -
@@ -258,24 +235,6 @@ To add a web page, use `WebLoader`.
 .addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Formula_One' }))
 ```
 
-## Confluence
-
-To add a confluence space, use `ConfluenceLoader`.
-
-```TS
-.addLoader(new ConfluenceLoader({ spaceNames: ['...'] }))
-```
-
-You also need to set the following environment variables -
-
-```bash
-CONFLUENCE_BASE_URL=<your space base url>
-CONFLUENCE_USER_NAME=<your email id or username>
-CONFLUENCE_API_TOKEN=<your personal or bot access token>
-```
-
-**Note:** The confluence space name is the value you see in the url in the space overview page `/wiki/spaces/{{ space name }}/overview`.
-
 ## Sitemap
 
 To add a XML sitemap, use `SitemapLoader`.
@@ -295,6 +254,56 @@ To supply your own text, use `TextLoader`.
 ```
 
 **Note:** Feel free to add your custom text without worrying about duplication. The library will chuck, cache and update the vector databases.
+
+## Youtube video
+
+To add any youtube video to your app, use `YoutubeLoader`.
+
+*Note*: You will need to import it dynamically and have the required pacakges installed.
+
+```TS
+.addLoader(new YoutubeLoader({ videoIdOrUrl: 'w2KbwC-s7pY' }))
+```
+
+## Youtube channel
+
+To add all videos in a youtube channel, use `YoutubeChannelLoader`.
+
+*Note*: You will need to import it dynamically and have the required pacakges installed.
+
+```TS
+.addLoader(new YoutubeChannelLoader({ channelId: '...' }))
+```
+
+## Youtube search
+
+To do a general youtube search and add the popular search results, use `YoutubeSearchLoader`.
+
+*Note*: You will need to import it dynamically and have the required pacakges installed.
+
+```TS
+.addLoader(new YoutubeSearchLoader({ searchString: '...' }))
+```
+
+## Confluence
+
+To add a confluence space, use `ConfluenceLoader`.
+
+*Note*: You will need to import it dynamically and have the required pacakges installed.
+
+```TS
+.addLoader(new ConfluenceLoader({ spaceNames: ['...'] }))
+```
+
+You also need to set the following environment variables -
+
+```bash
+CONFLUENCE_BASE_URL=<your space base url>
+CONFLUENCE_USER_NAME=<your email id or username>
+CONFLUENCE_API_TOKEN=<your personal or bot access token>
+```
+
+**Note:** The confluence space name is the value you see in the url in the space overview page `/wiki/spaces/{{ space name }}/overview`.
 
 ## Add a custom loader
 
@@ -579,29 +588,52 @@ PINECONE_API_KEY=<your api key>
 
 **Note:** Pinecone supports serverless and pod based index deployments. You can control how you want your index created using the indexSpec attribute. This is mandatory to be provided but comes with full type specification. Read more about configuring this [here](https://github.com/pinecone-io/pinecone-ts-client/blob/main/v2-migration.md).
 
-## LanceDB
+## MongoDB Atlas
 
-[LanceDB](https://lancedb.com/) is a local vector database with great performance. Follow these steps to use LanceDB as your vector database -
+[MongoDB Atlas](https://www.mongodb.com/cloud/atlas) is a fully managed cloud database service built by the same team behind MongoDB. It offers high availability, scalability, and security for your database needs. Follow these steps to use MongoDB Atlas as your database for vector storage:
 
--   Install LanceDb package in your project
+### Description
 
-```bash
-npm install vectordb
-```
+MongoDB Atlas provides a scalable and fully managed database solution for storing vectors and performing vector-based operations. With MongoDB Atlas, you can easily create, manage, and scale your database cluster to meet the demands of your application. Leveraging MongoDB's flexible document model, you can store vectors alongside other data types, making it a versatile solution for various use cases.
 
--   Set LanceDB database as your choice of `vectorDb`
+### Prerequisites
 
-```TS
-.setVectorDb(new LanceDb({ path: path.resolve('/db') }))
-```
+To use MongoDB Atlas as your vector database, you'll need:
 
-**Note:** The `path` property will be used by LanceDB to create a directory to host all the database files. There is also support for creating temporary directories for testing -
+- A MongoDB Atlas account. You can sign up [here](https://www.mongodb.com/cloud/atlas/register).
+- A MongoDB Atlas cluster, preferably an M10 or higher deployment, to ensure optimal performance and features.
 
-```TS
-.setVectorDb(new LanceDb({ path: 'lance-', isTemp: true }))
-```
+### Instructions
 
-In this case, the `path` property is used as a prefix to create the temporary directory in the OS temp directory folder.
+1. **Set up MongoDB Atlas Cluster:**
+   - Log in to your MongoDB Atlas account.
+   - Create a new project or select an existing one.
+   - Navigate to the Clusters section and click on "Build a New Cluster".
+   - Configure your cluster settings, including cloud provider, region, cluster tier (M10 or higher is recommended), and additional settings as needed.
+   - Once your cluster is created, wait for it to be deployed and become available.
+
+2. **Connect to your Cluster:**
+   - After your cluster is deployed, create a new database and collection.
+   - Next click on "Connect" to get your connection string.
+   - Whitelist your IP address if necessary to allow connections to your cluster.
+   - Create a username and account to connect to your cluster
+
+3. **Install MongoDB Node.js Driver:**
+   - In your Node.js project, install the MongoDB Node.js driver:
+
+   ```bash
+   npm install mongodb
+   ```
+
+4. **Configure MongoDB Atlas as Vector Database:**
+
+   - Add the following to your .env
+
+   ```bash
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database_name
+   DB_NAME=my_database
+   COLLECTION_NAME=my_collection
+   ```
 
 ## Chroma
 
