@@ -82,7 +82,7 @@ The author(s) are looking to add core maintainers for this opensource project. R
 -   [Vector databases supported](#vector-databases-supported)
     -   [Pinecone](#pinecone)
     -   [LanceDB](#lancedb)
-    -   [MongoDBAltas](#mongodbatlas)
+    -   [MongoDB Altas](#mongodb-atlas)
     -   [Chroma](#chroma)
     -   [HNSWLib](#hnswlib)
     -   [Weaviate](#weaviate)
