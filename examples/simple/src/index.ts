@@ -1,12 +1,10 @@
 import 'dotenv/config';
 
-import { RAGApplicationBuilder, WebLoader, YoutubeLoader, SitemapLoader } from '../../../src/index.js';
+import { RAGApplicationBuilder, WebLoader } from '../../../src/index.js';
 import { HNSWDb } from '../../../src/vectorDb/hnswlib-db.js';
 
 const llmApplication = await new RAGApplicationBuilder().setSearchResultCount(30).setVectorDb(new HNSWDb()).build();
 
-llmApplication.addLoader(new YoutubeLoader({ videoIdOrUrl: 'pQiT2U5E9tI' }));
-llmApplication.addLoader(new SitemapLoader({ url: 'https://tesla-info.com/sitemap.xml' }));
 llmApplication.addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }));
 
 console.log((await llmApplication.query('Who founded Tesla?')).result);
