@@ -3,7 +3,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, AIMessage, SystemMessage } from '@langchain/core/messages';
 import { encodingForModel } from "js-tiktoken";
 import { BaseModel } from '../interfaces/base-model.js';
-import { Chunk, ConversationHistory } from '../global/types.js';
+import { Chunk, EntryMessage } from '../global/types.js';
 import { getModelNameForTiktoken } from '@langchain/core/language_models/base';
 
 export class OpenAiMod extends BaseModel {
@@ -68,19 +68,19 @@ export class OpenAiMod extends BaseModel {
         system: string,
         userQuery: string,
         supportingContext: Chunk[],
-        pastConversations: ConversationHistory[],
+        pastConversations: EntryMessage[],
     ): Promise<any> {
         const pastMessages: (AIMessage | SystemMessage | HumanMessage)[] = [new SystemMessage(system)];
         var message = `Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}
 ###
 ${userQuery}`;
-        
+
         pastMessages.push(new HumanMessage(message));
 
         this.debug('Executing openai model with prompt -', userQuery);
         const result = await this.model.invoke(pastMessages, {});
-        var output = result.content.toString();   
-        
+        var output = result.content.toString();
+
         var cost = this.getTokenCost(pastMessages, output);
 
         return {

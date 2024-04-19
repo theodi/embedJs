@@ -24,12 +24,17 @@ export type AddLoaderReturn = {
     entriesAdded: number;
     uniqueId: string;
 };
-export type ConversationHistory = {
-    timestamp: Date;
+export type EntryMessage = {
     sender: 'HUMAN' | 'AI';
     message: string;
 };
 export type Conversation = {
     conversationId: string;
-    entries: ConversationHistory[];
+    entries: ConversationEntry[];
+};
+export type ConversationEntry = {
+    _id: string;
+    timestamp: Date;
+    content: EntryMessage;
+    sources: string[];
 };

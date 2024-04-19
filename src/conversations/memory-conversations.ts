@@ -1,5 +1,5 @@
 // InMemoryConversations.ts
-import { Conversation, ConversationHistory } from '../global/types.js';
+import { Conversation, ConversationEntry } from '../global/types.js';
 import { BaseConversations } from '../interfaces/base-conversations.js';
 
 class InMemoryConversations implements BaseConversations {
@@ -31,7 +31,7 @@ class InMemoryConversations implements BaseConversations {
         this.conversations.delete(conversationId);
     }
 
-    async addEntryToConversation(conversationId: string, entry: ConversationHistory): Promise<void> {
+    async addEntryToConversation(conversationId: string, entry: ConversationEntry): Promise<void> {
         const conversation = await this.getConversation(conversationId);
         conversation.entries.push(entry);
     }

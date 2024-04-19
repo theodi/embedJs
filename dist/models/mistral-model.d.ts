@@ -1,4 +1,4 @@
-import { Chunk, ConversationHistory } from '../global/types.js';
+import { Chunk, EntryMessage } from '../global/types.js';
 import { BaseModel } from '../interfaces/base-model.js';
 export declare class Mistral extends BaseModel {
     private readonly debug;
@@ -8,5 +8,5 @@ export declare class Mistral extends BaseModel {
         accessToken: string;
         modelName?: string;
     });
-    runQuery(system: string, userQuery: string, supportingContext: Chunk[], pastConversations: ConversationHistory[]): Promise<any>;
+    runQuery(system: string, userQuery: string, supportingContext: Chunk[], pastConversations: EntryMessage[]): Promise<any>;
 }

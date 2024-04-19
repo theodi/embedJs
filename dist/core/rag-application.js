@@ -5,7 +5,7 @@ import { BaseModel } from '../interfaces/base-model.js';
 import { RAGEmbedding } from './rag-embedding.js';
 import { cleanString } from '../util/strings.js';
 import { OpenAi3SmallEmbeddings } from '../index.js';
-import { InMemoryConversations } from '../conversations/memory-conversations.js'; // Assuming this is the class implementing BaseConversations
+import { InMemoryConversations } from '../conversations/memory-conversations.js';
 export class RAGApplication {
     constructor(llmBuilder) {
         Object.defineProperty(this, "debug", {
@@ -56,12 +56,18 @@ export class RAGApplication {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "conversations", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.cache = llmBuilder.getCache();
         BaseLoader.setCache(this.cache);
         this.model = llmBuilder.getModel();
         BaseModel.setDefaultTemperature(llmBuilder.getTemperature());
-        const conversations = new InMemoryConversations();
-        BaseModel.setConversations(conversations);
+        this.conversations = llmBuilder.getConversations() || new InMemoryConversations();
+        BaseModel.setConversations(this.conversations); // Use the set conversations
         this.queryTemplate = cleanString(llmBuilder.getQueryTemplate());
         this.debug(`Using system query template - "${this.queryTemplate}"`);
         this.loaders = llmBuilder.getLoaders();

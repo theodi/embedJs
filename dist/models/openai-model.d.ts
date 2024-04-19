@@ -1,5 +1,5 @@
 import { BaseModel } from '../interfaces/base-model.js';
-import { Chunk, ConversationHistory } from '../global/types.js';
+import { Chunk, EntryMessage } from '../global/types.js';
 export declare class OpenAi extends BaseModel {
     private readonly debug;
     private readonly modelName;
@@ -9,5 +9,5 @@ export declare class OpenAi extends BaseModel {
         modelName: string;
     });
     init(): Promise<void>;
-    runQuery(system: string, userQuery: string, supportingContext: Chunk[], pastConversations: ConversationHistory[]): Promise<any>;
+    runQuery(system: string, userQuery: string, supportingContext: Chunk[], pastConversations: EntryMessage[]): Promise<any>;
 }

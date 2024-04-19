@@ -1,4 +1,4 @@
-import { Chunk, ConversationHistory } from '../global/types.js';
+import { Chunk, EntryMessage } from '../global/types.js';
 import { BaseConversations } from './base-conversations.js';
 export declare abstract class BaseModel {
     private static defaultTemperature;
@@ -11,5 +11,6 @@ export declare abstract class BaseModel {
     get temperature(): number;
     init(): Promise<void>;
     query(system: string, userQuery: string, supportingContext: Chunk[], conversationId?: string): Promise<any>;
-    protected abstract runQuery(system: string, userQuery: string, supportingContext: Chunk[], pastConversations: ConversationHistory[]): Promise<any>;
+    private extractUniqueSources;
+    protected abstract runQuery(system: string, userQuery: string, supportingContext: Chunk[], pastConversations: EntryMessage[]): Promise<any>;
 }

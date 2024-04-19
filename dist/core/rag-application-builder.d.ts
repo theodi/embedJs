@@ -5,6 +5,7 @@ import { BaseCache } from '../interfaces/base-cache.js';
 import { BaseEmbeddings } from '../interfaces/base-embeddings.js';
 import { BaseModel } from '../interfaces/base-model.js';
 import { SIMPLE_MODELS } from '../global/constants.js';
+import { BaseConversations } from '../interfaces/base-conversations.js';
 export declare class RAGApplicationBuilder {
     private searchResultCount;
     private loaders;
@@ -12,6 +13,7 @@ export declare class RAGApplicationBuilder {
     private temperature;
     private queryTemplate;
     private cache?;
+    private conversations;
     private embeddingModel;
     private initLoaders;
     private model;
@@ -23,6 +25,7 @@ export declare class RAGApplicationBuilder {
     setTemperature(temperature: number): this;
     setQueryTemplate(queryTemplate: string): this;
     setCache(cache: BaseCache): this;
+    setConversations(conversations: BaseConversations): this;
     setEmbeddingModel(embeddingModel: BaseEmbeddings): this;
     setLoaderInit(shouldDo: boolean): this;
     setModel(model: string | SIMPLE_MODELS | BaseModel): this;
@@ -35,4 +38,5 @@ export declare class RAGApplicationBuilder {
     getEmbeddingModel(): BaseEmbeddings;
     getLoaderInit(): boolean;
     getModel(): BaseModel;
+    getConversations(): BaseConversations;
 }

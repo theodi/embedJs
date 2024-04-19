@@ -7,10 +7,11 @@ import { RAGApplicationBuilder } from './rag-application-builder.js';
 import { DEFAULT_INSERT_BATCH_SIZE } from '../global/constants.js';
 import { BaseModel } from '../interfaces/base-model.js';
 import { BaseCache } from '../interfaces/base-cache.js';
+import { BaseConversations } from '../interfaces/base-conversations.js';
 import { RAGEmbedding } from './rag-embedding.js';
 import { cleanString } from '../util/strings.js';
 import { OpenAi3SmallEmbeddings } from '../index.js';
-import { InMemoryConversations } from '../conversations/memory-conversations.js';  // Assuming this is the class implementing BaseConversations
+import { InMemoryConversations } from '../conversations/memory-conversations.js';
 
 export class RAGApplication {
     private readonly debug = createDebugMessages('embedjs:core');
@@ -21,6 +22,8 @@ export class RAGApplication {
     private readonly cache?: BaseCache;
     private readonly vectorDb: BaseDb;
     private readonly model: BaseModel;
+    private readonly conversations: BaseConversations;
+
 
     constructor(llmBuilder: RAGApplicationBuilder) {
         this.cache = llmBuilder.getCache();
@@ -28,8 +31,9 @@ export class RAGApplication {
 
         this.model = llmBuilder.getModel();
         BaseModel.setDefaultTemperature(llmBuilder.getTemperature());
-        const conversations = new InMemoryConversations();
-        BaseModel.setConversations(conversations);
+
+        this.conversations = llmBuilder.getConversations() || new InMemoryConversations();
+        BaseModel.setConversations(this.conversations);  // Use the set conversations
 
         this.queryTemplate = cleanString(llmBuilder.getQueryTemplate());
         this.debug(`Using system query template - "${this.queryTemplate}"`);

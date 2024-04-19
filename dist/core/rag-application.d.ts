@@ -10,6 +10,7 @@ export declare class RAGApplication {
     private readonly cache?;
     private readonly vectorDb;
     private readonly model;
+    private readonly conversations;
     constructor(llmBuilder: RAGApplicationBuilder);
     private embedChunks;
     private getChunkUniqueId;

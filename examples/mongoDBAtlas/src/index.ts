@@ -2,9 +2,10 @@ import 'dotenv/config';
 import { RAGApplicationBuilder, WebLoader } from '../../../src/index.js';
 import { MongoDBAtlas } from '../../../src/vectorDb/mongoAtlas-db.js';
 import { MongoCache } from '../../../src/cache/mongo-cache.js';
+import { MongoConversations } from '../../../src/conversations/mongo-conversations.js';
 
 // Extract environment variables
-const { MONGODB_URI, DB_NAME, COLLECTION_NAME, CACHE_COLLECTION_NAME } = process.env;
+const { MONGODB_URI, DB_NAME, COLLECTION_NAME, CACHE_COLLECTION_NAME, CONVERSATIONS_COLLECTION_NAME } = process.env;
 
 // Instantiate MongoDBAtlas with environment variables
 const db = new MongoDBAtlas({
@@ -19,8 +20,16 @@ const cachedb = new MongoCache({
     collectionName: CACHE_COLLECTION_NAME
 });
 
+const conversationsdb = new MongoConversations({
+    uri: MONGODB_URI,
+    dbName: DB_NAME,
+    collectionName: CONVERSATIONS_COLLECTION_NAME
+});
+
 // Initialize the connection to MongoDB Atlas
 await db.init();
+await cachedb.init();
+await conversationsdb.init();
 
 // Create an instance of RAGApplicationBuilder
 const llmApplication = await new RAGApplicationBuilder()
@@ -30,6 +39,7 @@ const llmApplication = await new RAGApplicationBuilder()
     // Set Vector Database
     .setVectorDb(db)
     .setCache(cachedb)
+    .setConversations(conversationsdb)
     .build();
 
 // Use the application for queries

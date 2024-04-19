@@ -11,7 +11,7 @@ const base_model_js_1 = require("../interfaces/base-model.cjs");
 const rag_embedding_js_1 = require("./rag-embedding.cjs");
 const strings_js_1 = require("../util/strings.cjs");
 const index_js_1 = require("../index.cjs");
-const memory_conversations_js_1 = require("../conversations/memory-conversations.cjs"); // Assuming this is the class implementing BaseConversations
+const memory_conversations_js_1 = require("../conversations/memory-conversations.cjs");
 class RAGApplication {
     constructor(llmBuilder) {
         Object.defineProperty(this, "debug", {
@@ -62,12 +62,18 @@ class RAGApplication {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "conversations", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.cache = llmBuilder.getCache();
         base_loader_js_1.BaseLoader.setCache(this.cache);
         this.model = llmBuilder.getModel();
         base_model_js_1.BaseModel.setDefaultTemperature(llmBuilder.getTemperature());
-        const conversations = new memory_conversations_js_1.InMemoryConversations();
-        base_model_js_1.BaseModel.setConversations(conversations);
+        this.conversations = llmBuilder.getConversations() || new memory_conversations_js_1.InMemoryConversations();
+        base_model_js_1.BaseModel.setConversations(this.conversations); // Use the set conversations
         this.queryTemplate = (0, strings_js_1.cleanString)(llmBuilder.getQueryTemplate());
         this.debug(`Using system query template - "${this.queryTemplate}"`);
         this.loaders = llmBuilder.getLoaders();

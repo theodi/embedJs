@@ -42,6 +42,12 @@ class RAGApplicationBuilder {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "conversations", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         Object.defineProperty(this, "embeddingModel", {
             enumerable: true,
             configurable: true,
@@ -65,8 +71,8 @@ class RAGApplicationBuilder {
         this.searchResultCount = 7;
         this.initLoaders = true;
         this.queryTemplate = `You are a helpful human like chat bot. Use all the provided context to answer the query at the end. Answer in full.
-        If you don't know the answer, just say that you don't know, don't try to make up an answer. 
-        
+        If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
         Do not use words like context or training data when responding. You can say you may not have all the information but do not say that you are not a reliable source.`;
         this.setModel(constants_js_1.SIMPLE_MODELS.OPENAI_GPT3_TURBO);
     }
@@ -101,6 +107,10 @@ class RAGApplicationBuilder {
     }
     setCache(cache) {
         this.cache = cache;
+        return this;
+    }
+    setConversations(conversations) {
+        this.conversations = conversations;
         return this;
     }
     setEmbeddingModel(embeddingModel) {
@@ -150,6 +160,9 @@ class RAGApplicationBuilder {
     }
     getModel() {
         return this.model;
+    }
+    getConversations() {
+        return this.conversations;
     }
 }
 exports.RAGApplicationBuilder = RAGApplicationBuilder;
