@@ -25,8 +25,8 @@ await db.init();
 // Create an instance of RAGApplicationBuilder
 const llmApplication = await new RAGApplicationBuilder()
     // Add loaders here
-    //.addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }))
-    //.addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Apple_Inc.' }))
+    .addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }))
+    .addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Apple_Inc.' }))
     // Set Vector Database
     .setVectorDb(db)
     .setCache(cachedb)
