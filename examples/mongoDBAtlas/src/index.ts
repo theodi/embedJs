@@ -25,23 +25,22 @@ await db.init();
 // Create an instance of RAGApplicationBuilder
 const llmApplication = await new RAGApplicationBuilder()
     // Add loaders here
-    .addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }))
+    //.addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }))
+    //.addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Apple_Inc.' }))
     // Set Vector Database
     .setVectorDb(db)
     .setCache(cachedb)
     .build();
 
 // Use the application for queries
-const query = 'Who founded Tesla?'
-
 const count = await llmApplication.getEmbeddingsCount();
 console.log("Documents: " + count);
 console.log("");
-/*
-console.log("Context");
-const context = await llmApplication.getContext(query);
-console.log(context);
-console.log("");
-*/
-console.log("Query");
-console.log((await llmApplication.query(query)));
+console.log("Conversation 1 - Query 1");
+console.log((await llmApplication.query('Who founded Tesla?','conversation1')));
+console.log("Conversation 2 - Query 1");
+console.log((await llmApplication.query('Who founded Apple?','conversation2')));
+console.log("Conversation 1 - Query 2");
+console.log((await llmApplication.query('and when was their biggest growth period to become a household name?','conversation1')));
+console.log("Conversation 2 - Query 2");
+console.log((await llmApplication.query('and when was their biggest growth period to become a household name?','conversation2')));

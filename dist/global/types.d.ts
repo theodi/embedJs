@@ -25,6 +25,11 @@ export type AddLoaderReturn = {
     uniqueId: string;
 };
 export type ConversationHistory = {
-    message: string;
+    timestamp: Date;
     sender: 'HUMAN' | 'AI';
+    message: string;
+};
+export type Conversation = {
+    conversationId: string;
+    entries: ConversationHistory[];
 };

@@ -10,6 +10,7 @@ import { BaseCache } from '../interfaces/base-cache.js';
 import { RAGEmbedding } from './rag-embedding.js';
 import { cleanString } from '../util/strings.js';
 import { OpenAi3SmallEmbeddings } from '../index.js';
+import { InMemoryConversations } from '../conversations/memory-conversations.js';  // Assuming this is the class implementing BaseConversations
 
 export class RAGApplication {
     private readonly debug = createDebugMessages('embedjs:core');
@@ -27,6 +28,8 @@ export class RAGApplication {
 
         this.model = llmBuilder.getModel();
         BaseModel.setDefaultTemperature(llmBuilder.getTemperature());
+        const conversations = new InMemoryConversations();
+        BaseModel.setConversations(conversations);
 
         this.queryTemplate = cleanString(llmBuilder.getQueryTemplate());
         this.debug(`Using system query template - "${this.queryTemplate}"`);
@@ -37,6 +40,7 @@ export class RAGApplication {
         this.initLoaders = llmBuilder.getLoaderInit();
 
         RAGEmbedding.init(llmBuilder.getEmbeddingModel() ?? new OpenAi3SmallEmbeddings());
+
         if (!this.model) throw new SyntaxError('Model not set');
         if (!this.vectorDb) throw new SyntaxError('VectorDb not set');
     }

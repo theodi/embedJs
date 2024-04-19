@@ -11,6 +11,7 @@ const base_model_js_1 = require("../interfaces/base-model.cjs");
 const rag_embedding_js_1 = require("./rag-embedding.cjs");
 const strings_js_1 = require("../util/strings.cjs");
 const index_js_1 = require("../index.cjs");
+const memory_conversations_js_1 = require("../conversations/memory-conversations.cjs"); // Assuming this is the class implementing BaseConversations
 class RAGApplication {
     constructor(llmBuilder) {
         Object.defineProperty(this, "debug", {
@@ -65,6 +66,8 @@ class RAGApplication {
         base_loader_js_1.BaseLoader.setCache(this.cache);
         this.model = llmBuilder.getModel();
         base_model_js_1.BaseModel.setDefaultTemperature(llmBuilder.getTemperature());
+        const conversations = new memory_conversations_js_1.InMemoryConversations();
+        base_model_js_1.BaseModel.setConversations(conversations);
         this.queryTemplate = (0, strings_js_1.cleanString)(llmBuilder.getQueryTemplate());
         this.debug(`Using system query template - "${this.queryTemplate}"`);
         this.loaders = llmBuilder.getLoaders();
