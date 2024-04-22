@@ -197,14 +197,14 @@
             "require": "./dist/cache/redis-cache.cjs"
         },
         "./conversations/memory": {
-            "types": "./dist/cache/memory-conversations.d.ts",
-            "import": "./dist/cache/memory-conversations.js",
-            "require": "./dist/cache/memory-conversations.cjs"
+            "types": "./dist/conversations/memory-conversations.d.ts",
+            "import": "./dist/conversations/memory-conversations.js",
+            "require": "./dist/conversations/memory-conversations.cjs"
         },
         "./conversations/mongo": {
-            "types": "./dist/cache/mongo-conversations.d.ts",
-            "import": "./dist/cache/mongo-conversations.js",
-            "require": "./dist/cache/mongo-conversations.cjs"
+            "types": "./dist/conversations/mongo-conversations.d.ts",
+            "import": "./dist/conversations/mongo-conversations.js",
+            "require": "./dist/conversations/mongo-conversations.cjs"
         },
         "./embeddings/ada": {
             "types": "./dist/embeddings/ada-embeddings.d.ts",
