@@ -56,3 +56,5 @@ console.log((await llmApplication.query('and when was their biggest growth perio
 const chunks2 = await llmApplication.getContext('Who founded Apple? and when was their biggest growth period to become a household name?');
 console.log("Conversation 2 - Query 2");
 console.log((await llmApplication.query('and when was their biggest growth period to become a household name?','conversation2',chunks2)));
+
+// You can also set context to [] to rely on the AI.
