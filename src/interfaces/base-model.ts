@@ -1,6 +1,6 @@
 import createDebugMessages from 'debug';
 import { v4 as uuidv4 } from 'uuid';
-import { Chunk, EntryMessage, ConversationEntry } from '../global/types.js';
+import { Chunk, EntryMessage, ConversationEntry, Sources } from '../global/types.js';
 import { BaseConversations } from './base-conversations.js';
 
 export abstract class BaseModel {
@@ -71,16 +71,24 @@ export abstract class BaseModel {
         return newEntry;
     }
 
-    private extractUniqueSources(supportingContext: Chunk[]): string[] {
-        const sourceSet = new Set<string>();  // Create a Set to hold unique sources
+    private extractUniqueSources(supportingContext: Chunk[]): Sources[] {
+        const uniqueSources = new Map<string, Sources>();  // Use a Map to track unique sources by URL
 
         supportingContext.forEach(item => {
-            if (item.metadata && item.metadata.source) {
-                sourceSet.add(item.metadata.source);  // Add source to Set
+            const { metadata } = item;
+            if (metadata && metadata.source) {
+                // Use the source URL as the key to ensure uniqueness
+                if (!uniqueSources.has(metadata.source)) {
+                    uniqueSources.set(metadata.source, {
+                        source: metadata.source,
+                        loaderId: metadata.uniqueLoaderId // Assuming this field always exists
+                    });
+                }
             }
         });
 
-        return Array.from(sourceSet);  // Convert Set to Array to return
+        // Convert the values of the Map to an array
+        return Array.from(uniqueSources.values());
     }
 
     protected abstract runQuery(

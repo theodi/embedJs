@@ -36,5 +36,9 @@ export type ConversationEntry = {
     _id: string;
     timestamp: Date;
     content: EntryMessage;
-    sources: string[];
+    sources: Sources[];
+};
+export type Sources = {
+    source: string;
+    loaderId: string;
 };
