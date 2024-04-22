@@ -196,6 +196,16 @@
             "import": "./dist/cache/redis-cache.js",
             "require": "./dist/cache/redis-cache.cjs"
         },
+        "./conversations/memory": {
+            "types": "./dist/cache/memory-conversations.d.ts",
+            "import": "./dist/cache/memory-conversations.js",
+            "require": "./dist/cache/memory-conversations.cjs"
+        },
+        "./conversations/mongo": {
+            "types": "./dist/cache/mongo-conversations.d.ts",
+            "import": "./dist/cache/mongo-conversations.js",
+            "require": "./dist/cache/mongo-conversations.cjs"
+        },
         "./embeddings/ada": {
             "types": "./dist/embeddings/ada-embeddings.d.ts",
             "import": "./dist/embeddings/ada-embeddings.js",
