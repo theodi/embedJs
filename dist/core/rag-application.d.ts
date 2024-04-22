@@ -1,5 +1,5 @@
 import { BaseLoader } from '../interfaces/base-loader.js';
-import { AddLoaderReturn, Chunk } from '../global/types.js';
+import { AddLoaderReturn, Chunk, ConversationEntry } from '../global/types.js';
 import { RAGApplicationBuilder } from './rag-application-builder.js';
 export declare class RAGApplication {
     private readonly debug;
@@ -24,10 +24,6 @@ export declare class RAGApplication {
     deleteAllEmbeddings(areYouSure?: boolean): Promise<boolean>;
     getEmbeddings(cleanQuery: string): Promise<Chunk[]>;
     getContext(query: string): Promise<Chunk[]>;
-    query(userQuery: string, conversationId?: string, context?: Chunk[]): Promise<{
-        result: string;
-        cost: number;
-        sources: string[];
-    }>;
+    query(userQuery: string, conversationId?: string, context?: Chunk[]): Promise<ConversationEntry>;
     clearCache(): Promise<void>;
 }

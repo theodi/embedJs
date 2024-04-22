@@ -210,13 +210,8 @@ class RAGApplication {
         if (!context) {
             context = await this.getContext(userQuery);
         }
-        const sources = [...new Set(context.map((chunk) => chunk.metadata.source))];
         var result = await this.model.query(this.queryTemplate, userQuery, context, conversationId);
-        return {
-            sources,
-            result: result.output,
-            cost: result.cost
-        };
+        return result;
     }
     async clearCache() {
         await this.cache.clear();

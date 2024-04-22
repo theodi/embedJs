@@ -43,17 +43,18 @@ export class BaseModel {
             },
             sources: []
         });
-        // Add AI response to history
-        await BaseModel.conversations.addEntryToConversation(conversationId, {
+        const newEntry = {
             _id: uuidv4(),
             timestamp: new Date(),
             content: {
-                sender: 'AI',
+                sender: "AI",
                 message: result.output
             },
             sources: uniqueSources
-        });
-        return result;
+        };
+        // Add AI response to history
+        await BaseModel.conversations.addEntryToConversation(conversationId, newEntry);
+        return newEntry;
     }
     extractUniqueSources(supportingContext) {
         const sourceSet = new Set(); // Create a Set to hold unique sources

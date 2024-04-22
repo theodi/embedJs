@@ -1,6 +1,6 @@
 import createDebugMessages from 'debug';
 import { v4 as uuidv4 } from 'uuid';
-import { Chunk, EntryMessage } from '../global/types.js';
+import { Chunk, EntryMessage, ConversationEntry } from '../global/types.js';
 import { BaseConversations } from './base-conversations.js';
 
 export abstract class BaseModel {
@@ -56,18 +56,19 @@ export abstract class BaseModel {
             sources: []
         });
 
-        // Add AI response to history
-        await BaseModel.conversations.addEntryToConversation(conversationId, {
+        const newEntry: ConversationEntry = {
             _id: uuidv4(),
             timestamp: new Date(),
             content: {
-                sender: 'AI',
+                sender: "AI",
                 message: result.output
             },
             sources: uniqueSources
-        });
+        }
+        // Add AI response to history
+        await BaseModel.conversations.addEntryToConversation(conversationId, newEntry);
 
-        return result;
+        return newEntry;
     }
 
     private extractUniqueSources(supportingContext: Chunk[]): string[] {

@@ -2,7 +2,7 @@ import createDebugMessages from 'debug';
 
 import { BaseDb } from '../interfaces/base-db.js';
 import { BaseLoader } from '../interfaces/base-loader.js';
-import { AddLoaderReturn, Chunk, EmbeddedChunk, LoaderChunk } from '../global/types.js';
+import { AddLoaderReturn, Chunk, EmbeddedChunk, LoaderChunk, ConversationEntry } from '../global/types.js';
 import { RAGApplicationBuilder } from './rag-application-builder.js';
 import { DEFAULT_INSERT_BATCH_SIZE } from '../global/constants.js';
 import { BaseModel } from '../interfaces/base-model.js';
@@ -203,23 +203,14 @@ export class RAGApplication {
         userQuery: string,
         conversationId?: string,
         context?: Chunk[]
-    ): Promise<{
-        result: string;
-        cost: number;
-        sources: string[];
-    }> {
+    ): Promise<ConversationEntry> {
         if (!context) {
             context = await this.getContext(userQuery);
         }
-        const sources = [...new Set(context.map((chunk) => chunk.metadata.source))];
 
         var result = await this.model.query(this.queryTemplate, userQuery, context, conversationId)
 
-        return {
-            sources,
-            result: result.output,
-            cost: result.cost
-        };
+        return result;
     }
 
     public async clearCache(): Promise<void> {
