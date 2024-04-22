@@ -30,7 +30,7 @@ export class OpenAi extends BaseModel {
             new SystemMessage(`Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}`),
         );
 
-        pastMessages.push.apply(
+        pastMessages.push.apply(pastMessages,
             pastConversations.map((c) => {
                 if (c.sender === 'AI')
                     return new AIMessage({

@@ -200,8 +200,10 @@ export class RAGApplication {
         const rawContext = await this.getEmbeddings(cleanQuery);
         return [...new Map(rawContext.map((item) => [item.pageContent, item])).values()];
     }
-    async query(userQuery, conversationId) {
-        const context = await this.getContext(userQuery);
+    async query(userQuery, conversationId, context) {
+        if (!context) {
+            context = await this.getContext(userQuery);
+        }
         const sources = [...new Set(context.map((chunk) => chunk.metadata.source))];
         var result = await this.model.query(this.queryTemplate, userQuery, context, conversationId);
         return {

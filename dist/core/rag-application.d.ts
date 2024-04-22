@@ -24,7 +24,7 @@ export declare class RAGApplication {
     deleteAllEmbeddings(areYouSure?: boolean): Promise<boolean>;
     getEmbeddings(cleanQuery: string): Promise<Chunk[]>;
     getContext(query: string): Promise<Chunk[]>;
-    query(userQuery: string, conversationId?: string): Promise<{
+    query(userQuery: string, conversationId?: string, context?: Chunk[]): Promise<{
         result: string;
         cost: number;
         sources: string[];

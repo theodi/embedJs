@@ -202,12 +202,15 @@ export class RAGApplication {
     public async query(
         userQuery: string,
         conversationId?: string,
+        context?: Chunk[]
     ): Promise<{
         result: string;
         cost: number;
         sources: string[];
     }> {
-        const context = await this.getContext(userQuery);
+        if (!context) {
+            context = await this.getContext(userQuery);
+        }
         const sources = [...new Set(context.map((chunk) => chunk.metadata.source))];
 
         var result = await this.model.query(this.queryTemplate, userQuery, context, conversationId)

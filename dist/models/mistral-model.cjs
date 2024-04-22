@@ -28,7 +28,7 @@ class Mistral extends base_model_js_1.BaseModel {
     async runQuery(system, userQuery, supportingContext, pastConversations) {
         const pastMessages = [new messages_1.SystemMessage(system)];
         pastMessages.push(new messages_1.SystemMessage(`Supporting context: ${supportingContext.map((s) => s.pageContent).join('; ')}`));
-        pastMessages.push.apply(pastConversations.map((c) => {
+        pastMessages.push.apply(pastMessages, pastConversations.map((c) => {
             if (c.sender === 'AI')
                 return new messages_1.AIMessage({
                     content: c.message,
