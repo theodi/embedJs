@@ -57,7 +57,7 @@
         "langchain": "^0.1.25",
         "md5": "^2.3.0",
         "mongodb": "^6.5.0",
-        "pdf-parse-fork": "^1.2.0",
+        "office-text-extractor": "^3.0.3",
         "sitemapper": "github:seantomburke/sitemapper#master",
         "uuid": "^9.0.1"
     },

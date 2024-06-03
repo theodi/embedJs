@@ -1,7 +1,5 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import * as fs from 'node:fs/promises';
-import pdf from 'pdf-parse-fork';
-import axios from 'axios';
+import { getTextExtractor } from 'office-text-extractor';
 import md5 from 'md5';
 
 import { BaseLoader } from '../interfaces/base-loader.js';
@@ -23,13 +21,10 @@ export class PdfLoader extends BaseLoader<{ type: 'PdfLoader' }> {
     override async *getChunks() {
         const chunker = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 0 });
 
-        let fileBuffer: Buffer;
-        if (!this.isUrl) fileBuffer = await fs.readFile(this.pathOrUrl);
-        else
-            fileBuffer = Buffer.from((await axios.get(this.pathOrUrl, { responseType: 'arraybuffer' })).data, 'binary');
-        const pdfParsed = await pdf(fileBuffer);
+        const extractor = getTextExtractor();
+        const pdfParsed = await extractor.extractText({ input: this.pathOrUrl, type: this.isUrl ? 'url' : 'file' });
 
-        const chunks = await chunker.splitText(cleanString(pdfParsed.text));
+        const chunks = await chunker.splitText(cleanString(pdfParsed));
         for (const chunk of chunks) {
             yield {
                 pageContent: chunk,
