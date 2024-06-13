@@ -178,11 +178,6 @@
             "import": "./dist/vectorDb/lance-db.js",
             "require": "./dist/vectorDb/lance-db.cjs"
         },
-        "./vectorDb/mongoAtlas": {
-            "types": "./dist/vectorDb/mongoAtlas-db.d.ts",
-            "import": "./dist/vectorDb/mongoAtlas-db.js",
-            "require": "./dist/vectorDb/mongoAtlas-db.cjs"
-        },
         "./vectorDb/pinecone": {
             "types": "./dist/vectorDb/pinecone-db.d.ts",
             "import": "./dist/vectorDb/pinecone-db.js",
