@@ -28,3 +28,21 @@ export function toTitleCase(str) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 }
+export function isValidURL(url) {
+    try {
+        new URL(url);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
+}
+export function isValidJson(str) {
+    try {
+        JSON.parse(str);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
+}

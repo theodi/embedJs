@@ -9,8 +9,8 @@ const md5_1 = __importDefault(require("md5"));
 const base_loader_js_1 = require("../interfaces/base-loader.cjs");
 const strings_js_1 = require("../util/strings.cjs");
 class TextLoader extends base_loader_js_1.BaseLoader {
-    constructor({ text }) {
-        super(`TextLoader_${(0, md5_1.default)(text)}`);
+    constructor({ text, chunkSize, chunkOverlap }) {
+        super(`TextLoader_${(0, md5_1.default)(text)}`, { text: (0, strings_js_1.truncateCenterString)(text, 50) }, chunkSize ?? 300, chunkOverlap ?? 0);
         Object.defineProperty(this, "text", {
             enumerable: true,
             configurable: true,
@@ -19,14 +19,16 @@ class TextLoader extends base_loader_js_1.BaseLoader {
         });
         this.text = text;
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         const tuncatedObjectString = (0, strings_js_1.truncateCenterString)(this.text, 50);
-        const chunker = new text_splitter_1.RecursiveCharacterTextSplitter({ chunkSize: 300, chunkOverlap: 0 });
+        const chunker = new text_splitter_1.RecursiveCharacterTextSplitter({
+            chunkSize: this.chunkSize,
+            chunkOverlap: this.chunkOverlap,
+        });
         const chunks = await chunker.splitText((0, strings_js_1.cleanString)(this.text));
         for (const chunk of chunks) {
             yield {
                 pageContent: chunk,
-                contentHash: (0, md5_1.default)(chunk),
                 metadata: {
                     type: 'TextLoader',
                     source: tuncatedObjectString,

@@ -22,11 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LanceDb = void 0;
 const fsOld = __importStar(require("node:fs"));
 const fs = __importStar(require("node:fs/promises"));
 const vectordb_1 = require("vectordb");
+const compute_cosine_similarity_1 = __importDefault(require("compute-cosine-similarity"));
 class LanceDb {
     constructor({ path, isTemp }) {
         Object.defineProperty(this, "isTemp", {
@@ -67,6 +71,7 @@ class LanceDb {
                     pageContent: 'sample',
                     vector: Array(dimensions),
                     uniqueLoaderId: 'sample',
+                    vectorString: 'sample',
                     metadata: 'sample',
                 },
             ]);
@@ -82,6 +87,7 @@ class LanceDb {
                 vector: chunk.vector,
                 uniqueLoaderId,
                 metadata: JSON.stringify(chunk.metadata),
+                vectorString: JSON.stringify(chunk.vector),
             };
         });
         await this.table.add(mapped);
@@ -90,13 +96,14 @@ class LanceDb {
     async similaritySearch(query, k) {
         const results = await this.table.search(query).limit(k).execute();
         return (results
-            //a mandatory record is required by lance during init to get schema
-            //and this record is also returned in results; we filter it out
+            //TODO: a mandatory record is used and this record is also returned in results; we filter it out
             .filter((entry) => entry.id !== 'md5')
             .map((result) => {
             const metadata = JSON.parse(result.metadata);
+            const vector = JSON.parse(result.vectorString);
             metadata.uniqueLoaderId = result.uniqueLoaderId;
             return {
+                score: (0, compute_cosine_similarity_1.default)(query, vector),
                 pageContent: result.pageContent,
                 metadata,
             };

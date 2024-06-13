@@ -9,12 +9,25 @@ export class YoutubeSearchLoader extends BaseLoader<{ type: 'YoutubeSearchLoader
     private readonly debug = createDebugMessages('embedjs:loader:YoutubeSearchLoader');
     private readonly searchString: string;
 
-    constructor({ searchString }: { searchString: string }) {
-        super(`YoutubeSearchLoader${md5(searchString)}`);
-        this.searchString = searchString;
+    constructor({
+        youtubeSearchString,
+        chunkSize,
+        chunkOverlap,
+    }: {
+        youtubeSearchString: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
+    }) {
+        super(
+            `YoutubeSearchLoader${md5(youtubeSearchString)}`,
+            { youtubeSearchString },
+            chunkSize ?? 2000,
+            chunkOverlap,
+        );
+        this.searchString = youtubeSearchString;
     }
 
-    override async *getChunks() {
+    override async *getUnfilteredChunks() {
         try {
             const { channels } = await usetube.searchChannel(this.searchString);
             this.debug(
@@ -22,10 +35,14 @@ export class YoutubeSearchLoader extends BaseLoader<{ type: 'YoutubeSearchLoader
             );
             const channelIds = channels.map((c) => c.channel_id);
 
-            for (const channelId of channelIds) {
-                const youtubeLoader = new YoutubeChannelLoader({ channelId });
+            for (const youtubeChannelId of channelIds) {
+                const youtubeLoader = new YoutubeChannelLoader({
+                    youtubeChannelId,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
 
-                for await (const chunk of youtubeLoader.getChunks()) {
+                for await (const chunk of youtubeLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

@@ -2,17 +2,15 @@ import { BaseLoader } from '../interfaces/base-loader.js';
 export declare class PdfLoader extends BaseLoader<{
     type: 'PdfLoader';
 }> {
-    private readonly pathOrUrl;
+    private readonly filePathOrUrl;
     private readonly isUrl;
-    constructor({ url }: {
-        url: string;
+    constructor({ filePathOrUrl, chunkOverlap, chunkSize, }: {
+        filePathOrUrl: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    constructor({ filePath }: {
-        filePath: string;
-    });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         pageContent: string;
-        contentHash: string;
         metadata: {
             type: "PdfLoader";
             source: string;

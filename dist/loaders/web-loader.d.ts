@@ -3,17 +3,15 @@ export declare class WebLoader extends BaseLoader<{
     type: 'WebLoader';
 }> {
     private readonly debug;
-    private readonly contentOrUrl;
+    private readonly urlOrContent;
     private readonly isUrl;
-    constructor({ url }: {
-        url: string;
+    constructor({ urlOrContent, chunkSize, chunkOverlap, }: {
+        urlOrContent: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    constructor({ content }: {
-        content: string;
-    });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         pageContent: string;
-        contentHash: string;
         metadata: {
             type: "WebLoader";
             source: string;

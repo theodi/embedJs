@@ -6,24 +6,38 @@ import { BaseLoader } from '../interfaces/base-loader.js';
 import { WebLoader } from './web-loader.js';
 
 export class SitemapLoader extends BaseLoader<{ type: 'SitemapLoader' }> {
+    public static async test(url: string): Promise<boolean> {
+        try {
+            // @ts-ignore
+            await new Sitemapper({ url, timeout: 15000 }).fetch();
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     private readonly debug = createDebugMessages('embedjs:loader:SitemapLoader');
     private readonly url: string;
 
-    constructor({ url }: { url: string }) {
-        super(`SitemapLoader_${md5(url)}`);
+    constructor({ url, chunkSize, chunkOverlap }: { url: string; chunkSize?: number; chunkOverlap?: number }) {
+        super(`SitemapLoader_${md5(url)}`, { url }, chunkSize ?? 2000, chunkOverlap);
         this.url = url;
     }
 
-    override async *getChunks() {
+    override async *getUnfilteredChunks() {
         try {
             // @ts-ignore
             const { sites } = await new Sitemapper({ url: this.url, timeout: 15000 }).fetch();
             this.debug(`Sitemap '${this.url}' returned ${sites.length} URLs`);
 
             for (const url of sites) {
-                const webLoader = new WebLoader({ url });
+                const webLoader = new WebLoader({
+                    urlOrContent: url,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
 
-                for await (const chunk of webLoader.getChunks()) {
+                for await (const chunk of webLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

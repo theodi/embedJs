@@ -2,7 +2,7 @@ import HNSWLib from 'hnswlib-node';
 import createDebugMessages from 'debug';
 
 import { BaseDb } from '../interfaces/base-db.js';
-import { Chunk, EmbeddedChunk, Metadata } from '../global/types.js';
+import { ExtractChunkData, InsertChunkData, Metadata } from '../global/types.js';
 
 export class HNSWDb implements BaseDb {
     private readonly debug = createDebugMessages('embedjs:vector:HNSWDb');
@@ -11,17 +11,14 @@ export class HNSWDb implements BaseDb {
     private docCount: number;
     private docMap: Map<number, { pageContent: string; metadata: Metadata<Record<string, string | number | boolean>> }>;
 
-    constructor() {
-        this.docCount = 0;
-        this.docMap = new Map();
-    }
-
     async init({ dimensions }: { dimensions: number }) {
         this.index = await new HNSWLib.HierarchicalNSW('cosine', dimensions);
         this.index.initIndex(0);
+        this.docMap = new Map();
+        this.docCount = 0;
     }
 
-    async insertChunks(chunks: EmbeddedChunk[]): Promise<number> {
+    async insertChunks(chunks: InsertChunkData[]): Promise<number> {
         const needed = this.index.getCurrentCount() + chunks.length;
         this.index.resizeIndex(needed);
 
@@ -34,10 +31,16 @@ export class HNSWDb implements BaseDb {
         return chunks.length;
     }
 
-    async similaritySearch(query: number[], k: number): Promise<Chunk[]> {
+    async similaritySearch(query: number[], k: number): Promise<ExtractChunkData[]> {
         k = Math.min(k, this.index.getCurrentCount());
         const result = this.index.searchKnn(query, k, (label) => this.docMap.has(label));
-        return result.neighbors.map((label) => this.docMap.get(label));
+
+        return result.neighbors.map((label, index) => {
+            return {
+                ...this.docMap.get(label),
+                score: result.distances[index],
+            };
+        });
     }
 
     async getVectorCount(): Promise<number> {

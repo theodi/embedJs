@@ -10,8 +10,8 @@ const debug_1 = __importDefault(require("debug"));
 const base_loader_js_1 = require("../interfaces/base-loader.cjs");
 const youtube_loader_js_1 = require("./youtube-loader.cjs");
 class YoutubeChannelLoader extends base_loader_js_1.BaseLoader {
-    constructor({ channelId }) {
-        super(`YoutubeChannelLoader_${(0, md5_1.default)(channelId)}`);
+    constructor({ youtubeChannelId, chunkSize, chunkOverlap, }) {
+        super(`YoutubeChannelLoader_${(0, md5_1.default)(youtubeChannelId)}`, { youtubeChannelId }, chunkSize ?? 2000, chunkOverlap);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -24,16 +24,20 @@ class YoutubeChannelLoader extends base_loader_js_1.BaseLoader {
             writable: true,
             value: void 0
         });
-        this.channelId = channelId;
+        this.channelId = youtubeChannelId;
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         try {
             const videos = await usetube_1.default.getChannelVideos(this.channelId);
             this.debug(`Channel '${this.channelId}' returned ${videos.length} videos`);
             const videoIds = videos.map((v) => v.id);
             for (const videoId of videoIds) {
-                const youtubeLoader = new youtube_loader_js_1.YoutubeLoader({ videoIdOrUrl: videoId });
-                for await (const chunk of youtubeLoader.getChunks()) {
+                const youtubeLoader = new youtube_loader_js_1.YoutubeLoader({
+                    videoIdOrUrl: videoId,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
+                for await (const chunk of youtubeLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

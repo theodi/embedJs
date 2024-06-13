@@ -4,8 +4,8 @@ import createDebugMessages from 'debug';
 import { BaseLoader } from '../interfaces/base-loader.js';
 import { YoutubeLoader } from './youtube-loader.js';
 export class YoutubeChannelLoader extends BaseLoader {
-    constructor({ channelId }) {
-        super(`YoutubeChannelLoader_${md5(channelId)}`);
+    constructor({ youtubeChannelId, chunkSize, chunkOverlap, }) {
+        super(`YoutubeChannelLoader_${md5(youtubeChannelId)}`, { youtubeChannelId }, chunkSize ?? 2000, chunkOverlap);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -18,16 +18,20 @@ export class YoutubeChannelLoader extends BaseLoader {
             writable: true,
             value: void 0
         });
-        this.channelId = channelId;
+        this.channelId = youtubeChannelId;
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         try {
             const videos = await usetube.getChannelVideos(this.channelId);
             this.debug(`Channel '${this.channelId}' returned ${videos.length} videos`);
             const videoIds = videos.map((v) => v.id);
             for (const videoId of videoIds) {
-                const youtubeLoader = new YoutubeLoader({ videoIdOrUrl: videoId });
-                for await (const chunk of youtubeLoader.getChunks()) {
+                const youtubeLoader = new YoutubeLoader({
+                    videoIdOrUrl: videoId,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
+                for await (const chunk of youtubeLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

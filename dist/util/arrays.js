@@ -8,3 +8,9 @@ export async function filterAsync(array, callbackfn) {
 export function createArrayChunks(arr, size) {
     return Array.from({ length: Math.ceil(arr.length / size) }, (_v, i) => arr.slice(i * size, i * size + size));
 }
+export function getUnique(array, K) {
+    var seen = {};
+    return array.filter(function (item) {
+        return seen.hasOwnProperty(item[K]()) ? false : (seen[item[K]()] = true);
+    });
+}

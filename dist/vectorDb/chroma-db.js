@@ -47,6 +47,7 @@ export class ChromaDb {
         });
         return results.documents[0].map((result, index) => {
             return {
+                score: results.distances[0][index],
                 pageContent: result,
                 metadata: {
                     id: results.ids[0][index],

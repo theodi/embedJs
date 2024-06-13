@@ -4,16 +4,17 @@ export declare class YoutubeSearchLoader extends BaseLoader<{
 }> {
     private readonly debug;
     private readonly searchString;
-    constructor({ searchString }: {
-        searchString: string;
+    constructor({ youtubeSearchString, chunkSize, chunkOverlap, }: {
+        youtubeSearchString: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         metadata: {
             type: "YoutubeSearchLoader";
             originalSource: string;
             source: string;
         };
         pageContent: string;
-        contentHash: string;
     }, void, unknown>;
 }

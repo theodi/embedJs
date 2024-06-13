@@ -5,9 +5,10 @@ import { HNSWDb } from '../../../src/vectorDb/hnswlib-db.js';
 
 const llmApplication = await new RAGApplicationBuilder().setSearchResultCount(30).setVectorDb(new HNSWDb()).build();
 
-llmApplication.addLoader(new WebLoader({ url: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }));
-llmApplication.addLoader(new PdfLoader({ url: 'https://lamport.azurewebsites.net/pubs/paxos-simple.pdf' }))
+await llmApplication.addLoader(new WebLoader({ urlOrContent: 'https://en.wikipedia.org/wiki/Tesla,_Inc.' }));
+await llmApplication.addLoader(new PdfLoader({ filePathOrUrl: 'https://lamport.azurewebsites.net/pubs/paxos-simple.pdf' }))
 
+console.log((await llmApplication.getContext('What is the Paxos algorithm?')));
 console.log((await llmApplication.query('What is the Paxos algorithm?')));
 // The founder of Tesla is Elon Musk. He co-founded the company with JB Straubel, Martin Eberhard, Marc Tarpenning, and Ian Wright in 2003. Elon Musk is also the CEO of SpaceX and Neuralink.
 

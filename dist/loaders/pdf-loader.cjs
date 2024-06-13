@@ -10,9 +10,9 @@ const md5_1 = __importDefault(require("md5"));
 const base_loader_js_1 = require("../interfaces/base-loader.cjs");
 const strings_js_1 = require("../util/strings.cjs");
 class PdfLoader extends base_loader_js_1.BaseLoader {
-    constructor({ filePath, url }) {
-        super(`PdfLoader_${(0, md5_1.default)(filePath ? `FILE_${filePath}` : `URL_${url}`)}`);
-        Object.defineProperty(this, "pathOrUrl", {
+    constructor({ filePathOrUrl, chunkOverlap, chunkSize, }) {
+        super(`PdfLoader_${(0, md5_1.default)(filePathOrUrl)}`, { filePathOrUrl }, chunkSize ?? 1000, chunkOverlap ?? 0);
+        Object.defineProperty(this, "filePathOrUrl", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -24,21 +24,23 @@ class PdfLoader extends base_loader_js_1.BaseLoader {
             writable: true,
             value: void 0
         });
-        this.isUrl = filePath ? false : true;
-        this.pathOrUrl = filePath ?? url;
+        this.filePathOrUrl = filePathOrUrl;
+        this.isUrl = (0, strings_js_1.isValidURL)(filePathOrUrl) ? true : false;
     }
-    async *getChunks() {
-        const chunker = new text_splitter_1.RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 0 });
+    async *getUnfilteredChunks() {
+        const chunker = new text_splitter_1.RecursiveCharacterTextSplitter({
+            chunkSize: this.chunkSize,
+            chunkOverlap: this.chunkOverlap,
+        });
         const extractor = (0, office_text_extractor_1.getTextExtractor)();
-        const pdfParsed = await extractor.extractText({ input: this.pathOrUrl, type: this.isUrl ? 'url' : 'file' });
+        const pdfParsed = await extractor.extractText({ input: this.filePathOrUrl, type: this.isUrl ? 'url' : 'file' });
         const chunks = await chunker.splitText((0, strings_js_1.cleanString)(pdfParsed));
         for (const chunk of chunks) {
             yield {
                 pageContent: chunk,
-                contentHash: (0, md5_1.default)(chunk),
                 metadata: {
                     type: 'PdfLoader',
-                    source: this.pathOrUrl,
+                    source: this.filePathOrUrl,
                 },
             };
         }

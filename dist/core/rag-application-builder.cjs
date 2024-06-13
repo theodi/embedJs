@@ -6,24 +6,6 @@ const constants_js_1 = require("../global/constants.cjs");
 const openai_model_js_1 = require("../models/openai-model.cjs");
 class RAGApplicationBuilder {
     constructor() {
-        Object.defineProperty(this, "searchResultCount", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
-        Object.defineProperty(this, "loaders", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
-        Object.defineProperty(this, "vectorDb", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
         Object.defineProperty(this, "temperature", {
             enumerable: true,
             configurable: true,
@@ -42,7 +24,13 @@ class RAGApplicationBuilder {
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "conversations", {
+        Object.defineProperty(this, "model", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "searchResultCount", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -54,13 +42,25 @@ class RAGApplicationBuilder {
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "initLoaders", {
+        Object.defineProperty(this, "embeddingRelevanceCutOff", {
             enumerable: true,
             configurable: true,
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "model", {
+        Object.defineProperty(this, "loaders", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "vectorDb", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "conversations", {
             enumerable: true,
             configurable: true,
             writable: true,
@@ -69,12 +69,12 @@ class RAGApplicationBuilder {
         this.loaders = [];
         this.temperature = 0.1;
         this.searchResultCount = 7;
-        this.initLoaders = true;
-        this.queryTemplate = `You are a helpful human like chat bot. Use all the provided context to answer the query at the end. Answer in full.
+        this.queryTemplate = `You are a helpful human like chat bot. Use relevant provided context and chat history to answer the query at the end. Answer in full.
         If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
-        Do not use words like context or training data when responding. You can say you may not have all the information but do not say that you are not a reliable source.`;
-        this.setModel(constants_js_1.SIMPLE_MODELS.OPENAI_GPT3_TURBO);
+        Do not use words like context or training data when responding. You can say you do not have all the information but do not indicate that you are not a reliable source.`;
+        this.setModel(constants_js_1.SIMPLE_MODELS.OPENAI_GPT4_O);
+        this.embeddingRelevanceCutOff = 0;
     }
     async build() {
         const entity = new rag_application_js_1.RAGApplication(this);
@@ -99,6 +99,10 @@ class RAGApplicationBuilder {
             this.setModel(this.model);
         return this;
     }
+    setEmbeddingRelevanceCutOff(embeddingRelevanceCutOff) {
+        this.embeddingRelevanceCutOff = embeddingRelevanceCutOff;
+        return this;
+    }
     setQueryTemplate(queryTemplate) {
         // if (!queryTemplate.includes('{0}'))
         //     throw new Error('queryTemplate must include a placeholder for the query using {0}');
@@ -109,28 +113,22 @@ class RAGApplicationBuilder {
         this.cache = cache;
         return this;
     }
-    setConversations(conversations) {
-        this.conversations = conversations;
-        return this;
-    }
     setEmbeddingModel(embeddingModel) {
         this.embeddingModel = embeddingModel;
-        return this;
-    }
-    setLoaderInit(shouldDo) {
-        this.initLoaders = shouldDo;
         return this;
     }
     setModel(model) {
         if (typeof model === 'object')
             this.model = model;
         else {
-            if (model === constants_js_1.SIMPLE_MODELS.OPENAI_GPT3_TURBO)
+            if (model === constants_js_1.SIMPLE_MODELS.OPENAI_GPT4_O)
+                this.model = new openai_model_js_1.OpenAi({ modelName: 'gpt-4o' });
+            else if (model === constants_js_1.SIMPLE_MODELS['OPENAI_GPT4_TURBO'])
+                this.model = new openai_model_js_1.OpenAi({ modelName: 'gpt-4-turbo' });
+            else if (model === constants_js_1.SIMPLE_MODELS['OPENAI_GPT3.5_TURBO'])
                 this.model = new openai_model_js_1.OpenAi({ modelName: 'gpt-3.5-turbo' });
-            else if (model === constants_js_1.SIMPLE_MODELS.OPENAI_GPT4)
-                this.model = new openai_model_js_1.OpenAi({ modelName: 'gpt-4' });
             else
-                this.model = new openai_model_js_1.OpenAi({ modelName: model });
+                this.model = null;
         }
         return this;
     }
@@ -146,6 +144,9 @@ class RAGApplicationBuilder {
     getTemperature() {
         return this.temperature;
     }
+    getEmbeddingRelevanceCutOff() {
+        return this.embeddingRelevanceCutOff;
+    }
     getQueryTemplate() {
         return this.queryTemplate;
     }
@@ -154,9 +155,6 @@ class RAGApplicationBuilder {
     }
     getEmbeddingModel() {
         return this.embeddingModel;
-    }
-    getLoaderInit() {
-        return this.initLoaders;
     }
     getModel() {
         return this.model;

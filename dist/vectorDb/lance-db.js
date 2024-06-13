@@ -1,6 +1,7 @@
 import * as fsOld from 'node:fs';
 import * as fs from 'node:fs/promises';
 import { connect } from 'vectordb';
+import similarity from 'compute-cosine-similarity';
 export class LanceDb {
     constructor({ path, isTemp }) {
         Object.defineProperty(this, "isTemp", {
@@ -41,6 +42,7 @@ export class LanceDb {
                     pageContent: 'sample',
                     vector: Array(dimensions),
                     uniqueLoaderId: 'sample',
+                    vectorString: 'sample',
                     metadata: 'sample',
                 },
             ]);
@@ -56,6 +58,7 @@ export class LanceDb {
                 vector: chunk.vector,
                 uniqueLoaderId,
                 metadata: JSON.stringify(chunk.metadata),
+                vectorString: JSON.stringify(chunk.vector),
             };
         });
         await this.table.add(mapped);
@@ -64,13 +67,14 @@ export class LanceDb {
     async similaritySearch(query, k) {
         const results = await this.table.search(query).limit(k).execute();
         return (results
-            //a mandatory record is required by lance during init to get schema
-            //and this record is also returned in results; we filter it out
+            //TODO: a mandatory record is used and this record is also returned in results; we filter it out
             .filter((entry) => entry.id !== 'md5')
             .map((result) => {
             const metadata = JSON.parse(result.metadata);
+            const vector = JSON.parse(result.vectorString);
             metadata.uniqueLoaderId = result.uniqueLoaderId;
             return {
+                score: similarity(query, vector),
                 pageContent: result.pageContent,
                 metadata,
             };

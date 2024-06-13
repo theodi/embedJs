@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toTitleCase = exports.historyToString = exports.stringFormat = exports.cleanString = exports.truncateCenterString = void 0;
+exports.isValidJson = exports.isValidURL = exports.toTitleCase = exports.historyToString = exports.stringFormat = exports.cleanString = exports.truncateCenterString = void 0;
 function truncateCenterString(fullStr, strLen, separator) {
     if (fullStr.length <= strLen)
         return fullStr;
@@ -36,3 +36,23 @@ function toTitleCase(str) {
     });
 }
 exports.toTitleCase = toTitleCase;
+function isValidURL(url) {
+    try {
+        new URL(url);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
+}
+exports.isValidURL = isValidURL;
+function isValidJson(str) {
+    try {
+        JSON.parse(str);
+        return true;
+    }
+    catch (error) {
+        return false;
+    }
+}
+exports.isValidJson = isValidJson;

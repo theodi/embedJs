@@ -78,6 +78,7 @@ export class PineconeDb {
             const pageContent = match.metadata.pageContent;
             delete match.metadata.pageContent;
             return {
+                score: match.score,
                 pageContent,
                 metadata: match.metadata,
             };

@@ -1,4 +1,4 @@
-import { EntryMessage } from '../global/types.js';
+import { EntryMessage  } from '../global/types.js';
 
 export function truncateCenterString(fullStr: string, strLen: number, separator?: string) {
     if (fullStr.length <= strLen) return fullStr;
@@ -39,4 +39,22 @@ export function toTitleCase(str: string) {
     return str.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
+}
+
+export function isValidURL(url: string) {
+    try {
+        new URL(url);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+export function isValidJson(str: string) {
+    try {
+        JSON.parse(str);
+        return true;
+    } catch (error) {
+        return false;
+    }
 }

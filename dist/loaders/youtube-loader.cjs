@@ -11,8 +11,8 @@ const md5_1 = __importDefault(require("md5"));
 const base_loader_js_1 = require("../interfaces/base-loader.cjs");
 const strings_js_1 = require("../util/strings.cjs");
 class YoutubeLoader extends base_loader_js_1.BaseLoader {
-    constructor({ videoIdOrUrl }) {
-        super(`YoutubeLoader_${(0, md5_1.default)(videoIdOrUrl)}`);
+    constructor({ videoIdOrUrl, chunkSize, chunkOverlap, }) {
+        super(`YoutubeLoader_${(0, md5_1.default)(videoIdOrUrl)}`, { videoIdOrUrl }, chunkSize ?? 2000, chunkOverlap ?? 0);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -27,8 +27,11 @@ class YoutubeLoader extends base_loader_js_1.BaseLoader {
         });
         this.videoIdOrUrl = videoIdOrUrl;
     }
-    async *getChunks() {
-        const chunker = new text_splitter_1.RecursiveCharacterTextSplitter({ chunkSize: 2000, chunkOverlap: 0 });
+    async *getUnfilteredChunks() {
+        const chunker = new text_splitter_1.RecursiveCharacterTextSplitter({
+            chunkSize: this.chunkSize,
+            chunkOverlap: this.chunkOverlap,
+        });
         try {
             const transcripts = await youtube_transcript_1.YoutubeTranscript.fetchTranscript(this.videoIdOrUrl, { lang: 'en' });
             this.debug(`Transcripts (length ${transcripts.length}) obtained for video`, this.videoIdOrUrl);
@@ -36,7 +39,6 @@ class YoutubeLoader extends base_loader_js_1.BaseLoader {
                 for (const chunk of await chunker.splitText((0, strings_js_1.cleanString)(transcript.text))) {
                     yield {
                         pageContent: chunk,
-                        contentHash: (0, md5_1.default)(chunk),
                         metadata: {
                             type: 'YoutubeLoader',
                             source: this.videoIdOrUrl,

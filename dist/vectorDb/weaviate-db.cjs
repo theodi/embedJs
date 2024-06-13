@@ -29,9 +29,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WeaviateDb = void 0;
 const debug_1 = __importDefault(require("debug"));
 const weaviate_ts_client_1 = __importStar(require("weaviate-ts-client"));
+const compute_cosine_similarity_1 = __importDefault(require("compute-cosine-similarity"));
 const strings_js_1 = require("../util/strings.cjs");
 class WeaviateDb {
-    constructor({ host, apiKey, className }) {
+    constructor({ host, apiKey, className, scheme = 'https', }) {
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -57,7 +58,7 @@ class WeaviateDb {
             value: void 0
         });
         // @ts-ignore
-        this.client = weaviate_ts_client_1.default.client({ scheme: 'https', host, apiKey: new weaviate_ts_client_1.ApiKey(apiKey) });
+        this.client = weaviate_ts_client_1.default.client({ scheme, host, apiKey: new weaviate_ts_client_1.ApiKey(apiKey) });
         this.className = (0, strings_js_1.toTitleCase)(className); // Weaviate translates the className during create to title case and errors at other places
     }
     async init({ dimensions }) {
@@ -125,13 +126,16 @@ class WeaviateDb {
             .get()
             .withClassName(this.className)
             .withNearVector({ vector: query })
-            .withFields('uniqueLoaderId pageContent source')
+            .withFields('uniqueLoaderId pageContent source _additional { vector }')
             .withLimit(k)
             .do();
         return queryResponse.data.Get[this.className].map((match) => {
             const pageContent = match.pageContent;
             delete match.pageContent;
+            const vector = match._additional.vector;
+            delete match._additional;
             return {
+                score: (0, compute_cosine_similarity_1.default)(query, vector),
                 pageContent,
                 metadata: match,
             };

@@ -6,12 +6,14 @@ export declare class ConfluenceLoader extends BaseLoader<{
     private readonly confluence;
     private readonly confluenceBaseUrl;
     private readonly spaceNames;
-    constructor({ spaceNames, confluenceBaseUrl, confluenceUsername, confluenceToken, }: {
+    constructor({ spaceNames, confluenceBaseUrl, confluenceUsername, confluenceToken, chunkSize, chunkOverlap, }: {
         spaceNames: [string, ...string[]];
         confluenceBaseUrl?: string;
         confluenceUsername?: string;
         confluenceToken?: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    getChunks(): AsyncGenerator<any, void, unknown>;
+    getUnfilteredChunks(): AsyncGenerator<any, void, unknown>;
     private getContentChunks;
 }

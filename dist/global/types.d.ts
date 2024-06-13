@@ -6,6 +6,10 @@ export type LoaderChunk<Meta extends Record<string, string | number | boolean> =
     contentHash: string;
     metadata: LoaderMetadata<Meta>;
 };
+export type UnfilteredLoaderChunk<Meta extends Record<string, string | number | boolean> = Record<string, string | number | boolean>> = {
+    pageContent: string;
+    metadata: LoaderMetadata<Meta>;
+};
 export type Metadata<T> = T & {
     id: string;
     uniqueLoaderId: string;
@@ -15,19 +19,30 @@ export type Chunk<Meta extends Record<string, string | number | boolean> = Recor
     pageContent: string;
     metadata: Metadata<Meta>;
 };
-export type EmbeddedChunk<Meta extends Record<string, string | number | boolean> = Record<string, string | number | boolean>> = {
+export type InsertChunkData<Meta extends Record<string, string | number | boolean> = Record<string, string | number | boolean>> = {
     vector: number[];
+    pageContent: string;
+    metadata: Metadata<Meta>;
+};
+export type ExtractChunkData<Meta extends Record<string, string | number | boolean> = Record<string, string | number | boolean>> = {
+    score: number;
     pageContent: string;
     metadata: Metadata<Meta>;
 };
 export type AddLoaderReturn = {
     entriesAdded: number;
     uniqueId: string;
+    loaderType: string;
 };
 export type EntryMessage = {
-    sender: 'HUMAN' | 'AI';
+    sender: 'HUMAN' | 'AI' | 'SYSTEM';
     message: string;
 };
+export type LoaderList = {
+    type: string;
+    uniqueId: string;
+    loaderMetadata: Record<string, unknown>;
+}[];
 export type Conversation = {
     conversationId: string;
     entries: ConversationEntry[];

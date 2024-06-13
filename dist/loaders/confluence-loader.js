@@ -4,8 +4,8 @@ import md5 from 'md5';
 import { BaseLoader } from '../interfaces/base-loader.js';
 import { WebLoader } from './web-loader.js';
 export class ConfluenceLoader extends BaseLoader {
-    constructor({ spaceNames, confluenceBaseUrl, confluenceUsername, confluenceToken, }) {
-        super(`ConfluenceLoader_${md5(spaceNames.join(','))}`);
+    constructor({ spaceNames, confluenceBaseUrl, confluenceUsername, confluenceToken, chunkSize, chunkOverlap, }) {
+        super(`ConfluenceLoader_${md5(spaceNames.join(','))}`, { spaceNames }, chunkSize ?? 2000, chunkOverlap ?? 200);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -42,15 +42,13 @@ export class ConfluenceLoader extends BaseLoader {
             },
         });
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         for (const spaceKey of this.spaceNames) {
             try {
-                let i = 0;
                 const spaceContent = await this.confluence.space.getContentForSpace({ spaceKey });
                 this.debug(`Confluence space (length ${spaceContent['page'].results.length}) obtained for space`, spaceKey);
                 for await (const result of this.getContentChunks(spaceContent['page'].results)) {
                     yield result;
-                    i++;
                 }
             }
             catch (e) {
@@ -67,11 +65,16 @@ export class ConfluenceLoader extends BaseLoader {
             });
             if (!content.body.view.value)
                 continue;
-            const webLoader = new WebLoader({ content: content.body.view.value });
-            for await (const result of await webLoader.getChunks()) {
+            const webLoader = new WebLoader({
+                urlOrContent: content.body.view.value,
+                chunkSize: this.chunkSize,
+                chunkOverlap: this.chunkOverlap,
+            });
+            for await (const result of await webLoader.getUnfilteredChunks()) {
+                //remove all types of empty brackets from string
+                result.pageContent = result.pageContent.replace(/[\[\]\(\)\{\}]/g, '');
                 yield {
                     pageContent: result.pageContent,
-                    contentHash: result.contentHash,
                     metadata: {
                         type: 'ConfluenceLoader',
                         source: `${this.confluenceBaseUrl}/wiki${content._links.webui}`,

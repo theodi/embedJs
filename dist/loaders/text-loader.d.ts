@@ -3,12 +3,13 @@ export declare class TextLoader extends BaseLoader<{
     type: 'TextLoader';
 }> {
     private readonly text;
-    constructor({ text }: {
+    constructor({ text, chunkSize, chunkOverlap }: {
         text: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         pageContent: string;
-        contentHash: string;
         metadata: {
             type: "TextLoader";
             source: string;

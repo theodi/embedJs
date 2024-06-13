@@ -18,13 +18,17 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
         confluenceBaseUrl,
         confluenceUsername,
         confluenceToken,
+        chunkSize,
+        chunkOverlap,
     }: {
         spaceNames: [string, ...string[]];
         confluenceBaseUrl?: string;
         confluenceUsername?: string;
         confluenceToken?: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     }) {
-        super(`ConfluenceLoader_${md5(spaceNames.join(','))}`);
+        super(`ConfluenceLoader_${md5(spaceNames.join(','))}`, { spaceNames }, chunkSize ?? 2000, chunkOverlap ?? 200);
 
         this.spaceNames = spaceNames;
         this.confluenceBaseUrl = confluenceBaseUrl ?? process.env.CONFLUENCE_BASE_URL;
@@ -40,10 +44,9 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
         });
     }
 
-    override async *getChunks() {
+    override async *getUnfilteredChunks() {
         for (const spaceKey of this.spaceNames) {
             try {
-                let i = 0;
                 const spaceContent = await this.confluence.space.getContentForSpace({ spaceKey });
                 this.debug(
                     `Confluence space (length ${spaceContent['page'].results.length}) obtained for space`,
@@ -52,7 +55,6 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
 
                 for await (const result of this.getContentChunks(spaceContent['page'].results)) {
                     yield result;
-                    i++;
                 }
             } catch (e) {
                 this.debug('Could not get space details', spaceKey, e);
@@ -69,11 +71,18 @@ export class ConfluenceLoader extends BaseLoader<{ type: 'ConfluenceLoader' }> {
             });
 
             if (!content.body.view.value) continue;
-            const webLoader = new WebLoader({ content: content.body.view.value });
-            for await (const result of await webLoader.getChunks()) {
+            const webLoader = new WebLoader({
+                urlOrContent: content.body.view.value,
+                chunkSize: this.chunkSize,
+                chunkOverlap: this.chunkOverlap,
+            });
+
+            for await (const result of await webLoader.getUnfilteredChunks()) {
+                //remove all types of empty brackets from string
+                result.pageContent = result.pageContent.replace(/[\[\]\(\)\{\}]/g, '');
+
                 yield {
                     pageContent: result.pageContent,
-                    contentHash: result.contentHash,
                     metadata: {
                         type: <'ConfluenceLoader'>'ConfluenceLoader',
                         source: `${this.confluenceBaseUrl}/wiki${content._links.webui}`,

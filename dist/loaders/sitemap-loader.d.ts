@@ -2,18 +2,20 @@ import { BaseLoader } from '../interfaces/base-loader.js';
 export declare class SitemapLoader extends BaseLoader<{
     type: 'SitemapLoader';
 }> {
+    static test(url: string): Promise<boolean>;
     private readonly debug;
     private readonly url;
-    constructor({ url }: {
+    constructor({ url, chunkSize, chunkOverlap }: {
         url: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         metadata: {
             type: "SitemapLoader";
             originalSource: string;
             source: string;
         };
         pageContent: string;
-        contentHash: string;
     }, void, unknown>;
 }

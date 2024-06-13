@@ -4,8 +4,8 @@ import createDebugMessages from 'debug';
 import { BaseLoader } from '../interfaces/base-loader.js';
 import { YoutubeChannelLoader } from './youtube-channel-loader.js';
 export class YoutubeSearchLoader extends BaseLoader {
-    constructor({ searchString }) {
-        super(`YoutubeSearchLoader${md5(searchString)}`);
+    constructor({ youtubeSearchString, chunkSize, chunkOverlap, }) {
+        super(`YoutubeSearchLoader${md5(youtubeSearchString)}`, { youtubeSearchString }, chunkSize ?? 2000, chunkOverlap);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -18,16 +18,20 @@ export class YoutubeSearchLoader extends BaseLoader {
             writable: true,
             value: void 0
         });
-        this.searchString = searchString;
+        this.searchString = youtubeSearchString;
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         try {
             const { channels } = await usetube.searchChannel(this.searchString);
             this.debug(`Search for channels with search string '${this.searchString}' found ${channels.length} entries`);
             const channelIds = channels.map((c) => c.channel_id);
-            for (const channelId of channelIds) {
-                const youtubeLoader = new YoutubeChannelLoader({ channelId });
-                for await (const chunk of youtubeLoader.getChunks()) {
+            for (const youtubeChannelId of channelIds) {
+                const youtubeLoader = new YoutubeChannelLoader({
+                    youtubeChannelId,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
+                for await (const chunk of youtubeLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

@@ -4,16 +4,17 @@ export declare class YoutubeChannelLoader extends BaseLoader<{
 }> {
     private readonly debug;
     private readonly channelId;
-    constructor({ channelId }: {
-        channelId: string;
+    constructor({ youtubeChannelId, chunkSize, chunkOverlap, }: {
+        youtubeChannelId: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         metadata: {
             type: "YoutubeChannelLoader";
             originalSource: string;
             source: string;
         };
         pageContent: string;
-        contentHash: string;
     }, void, unknown>;
 }

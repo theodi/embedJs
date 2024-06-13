@@ -3,35 +3,43 @@ import { getTextExtractor } from 'office-text-extractor';
 import md5 from 'md5';
 
 import { BaseLoader } from '../interfaces/base-loader.js';
-import { cleanString } from '../util/strings.js';
+import { cleanString, isValidURL } from '../util/strings.js';
 
 export class PdfLoader extends BaseLoader<{ type: 'PdfLoader' }> {
-    private readonly pathOrUrl: string;
+    private readonly filePathOrUrl: string;
     private readonly isUrl: boolean;
 
-    constructor({ url }: { url: string });
-    constructor({ filePath }: { filePath: string });
-    constructor({ filePath, url }: { filePath?: string; url?: string }) {
-        super(`PdfLoader_${md5(filePath ? `FILE_${filePath}` : `URL_${url}`)}`);
+    constructor({
+        filePathOrUrl,
+        chunkOverlap,
+        chunkSize,
+    }: {
+        filePathOrUrl: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
+    }) {
+        super(`PdfLoader_${md5(filePathOrUrl)}`, { filePathOrUrl }, chunkSize ?? 1000, chunkOverlap ?? 0);
 
-        this.isUrl = filePath ? false : true;
-        this.pathOrUrl = filePath ?? url;
+        this.filePathOrUrl = filePathOrUrl;
+        this.isUrl = isValidURL(filePathOrUrl) ? true : false;
     }
 
-    override async *getChunks() {
-        const chunker = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 0 });
+    override async *getUnfilteredChunks() {
+        const chunker = new RecursiveCharacterTextSplitter({
+            chunkSize: this.chunkSize,
+            chunkOverlap: this.chunkOverlap,
+        });
 
         const extractor = getTextExtractor();
-        const pdfParsed = await extractor.extractText({ input: this.pathOrUrl, type: this.isUrl ? 'url' : 'file' });
+        const pdfParsed = await extractor.extractText({ input: this.filePathOrUrl, type: this.isUrl ? 'url' : 'file' });
 
         const chunks = await chunker.splitText(cleanString(pdfParsed));
         for (const chunk of chunks) {
             yield {
                 pageContent: chunk,
-                contentHash: md5(chunk),
                 metadata: {
                     type: <'PdfLoader'>'PdfLoader',
-                    source: this.pathOrUrl,
+                    source: this.filePathOrUrl,
                 },
             };
         }

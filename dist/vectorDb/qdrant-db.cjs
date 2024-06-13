@@ -77,6 +77,7 @@ class QdrantDb {
             const pageContent = match.payload.pageContent;
             delete match.payload.pageContent;
             return {
+                score: match.score,
                 pageContent,
                 metadata: match.payload,
             };

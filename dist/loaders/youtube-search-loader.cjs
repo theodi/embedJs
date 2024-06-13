@@ -10,8 +10,8 @@ const debug_1 = __importDefault(require("debug"));
 const base_loader_js_1 = require("../interfaces/base-loader.cjs");
 const youtube_channel_loader_js_1 = require("./youtube-channel-loader.cjs");
 class YoutubeSearchLoader extends base_loader_js_1.BaseLoader {
-    constructor({ searchString }) {
-        super(`YoutubeSearchLoader${(0, md5_1.default)(searchString)}`);
+    constructor({ youtubeSearchString, chunkSize, chunkOverlap, }) {
+        super(`YoutubeSearchLoader${(0, md5_1.default)(youtubeSearchString)}`, { youtubeSearchString }, chunkSize ?? 2000, chunkOverlap);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -24,16 +24,20 @@ class YoutubeSearchLoader extends base_loader_js_1.BaseLoader {
             writable: true,
             value: void 0
         });
-        this.searchString = searchString;
+        this.searchString = youtubeSearchString;
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         try {
             const { channels } = await usetube_1.default.searchChannel(this.searchString);
             this.debug(`Search for channels with search string '${this.searchString}' found ${channels.length} entries`);
             const channelIds = channels.map((c) => c.channel_id);
-            for (const channelId of channelIds) {
-                const youtubeLoader = new youtube_channel_loader_js_1.YoutubeChannelLoader({ channelId });
-                for await (const chunk of youtubeLoader.getChunks()) {
+            for (const youtubeChannelId of channelIds) {
+                const youtubeLoader = new youtube_channel_loader_js_1.YoutubeChannelLoader({
+                    youtubeChannelId,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
+                for await (const chunk of youtubeLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

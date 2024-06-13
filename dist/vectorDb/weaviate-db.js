@@ -1,8 +1,9 @@
 import createDebugMessages from 'debug';
 import weaviate, { ApiKey, generateUuid5 } from 'weaviate-ts-client';
+import similarity from 'compute-cosine-similarity';
 import { toTitleCase } from '../util/strings.js';
 export class WeaviateDb {
-    constructor({ host, apiKey, className }) {
+    constructor({ host, apiKey, className, scheme = 'https', }) {
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -28,7 +29,7 @@ export class WeaviateDb {
             value: void 0
         });
         // @ts-ignore
-        this.client = weaviate.client({ scheme: 'https', host, apiKey: new ApiKey(apiKey) });
+        this.client = weaviate.client({ scheme, host, apiKey: new ApiKey(apiKey) });
         this.className = toTitleCase(className); // Weaviate translates the className during create to title case and errors at other places
     }
     async init({ dimensions }) {
@@ -96,13 +97,16 @@ export class WeaviateDb {
             .get()
             .withClassName(this.className)
             .withNearVector({ vector: query })
-            .withFields('uniqueLoaderId pageContent source')
+            .withFields('uniqueLoaderId pageContent source _additional { vector }')
             .withLimit(k)
             .do();
         return queryResponse.data.Get[this.className].map((match) => {
             const pageContent = match.pageContent;
             delete match.pageContent;
+            const vector = match._additional.vector;
+            delete match._additional;
             return {
+                score: similarity(query, vector),
                 pageContent,
                 metadata: match,
             };

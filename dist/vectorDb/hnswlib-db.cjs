@@ -32,12 +32,12 @@ class HNSWDb {
             writable: true,
             value: void 0
         });
-        this.docCount = 0;
-        this.docMap = new Map();
     }
     async init({ dimensions }) {
         this.index = await new hnswlib_node_1.default.HierarchicalNSW('cosine', dimensions);
         this.index.initIndex(0);
+        this.docMap = new Map();
+        this.docCount = 0;
     }
     async insertChunks(chunks) {
         const needed = this.index.getCurrentCount() + chunks.length;
@@ -52,7 +52,12 @@ class HNSWDb {
     async similaritySearch(query, k) {
         k = Math.min(k, this.index.getCurrentCount());
         const result = this.index.searchKnn(query, k, (label) => this.docMap.has(label));
-        return result.neighbors.map((label) => this.docMap.get(label));
+        return result.neighbors.map((label, index) => {
+            return {
+                ...this.docMap.get(label),
+                score: result.distances[index],
+            };
+        });
     }
     async getVectorCount() {
         return this.index.getCurrentCount();

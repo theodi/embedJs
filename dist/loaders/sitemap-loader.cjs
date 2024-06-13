@@ -10,8 +10,18 @@ const debug_1 = __importDefault(require("debug"));
 const base_loader_js_1 = require("../interfaces/base-loader.cjs");
 const web_loader_js_1 = require("./web-loader.cjs");
 class SitemapLoader extends base_loader_js_1.BaseLoader {
-    constructor({ url }) {
-        super(`SitemapLoader_${(0, md5_1.default)(url)}`);
+    static async test(url) {
+        try {
+            // @ts-ignore
+            await new sitemapper_1.default({ url, timeout: 15000 }).fetch();
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
+    constructor({ url, chunkSize, chunkOverlap }) {
+        super(`SitemapLoader_${(0, md5_1.default)(url)}`, { url }, chunkSize ?? 2000, chunkOverlap);
         Object.defineProperty(this, "debug", {
             enumerable: true,
             configurable: true,
@@ -26,14 +36,18 @@ class SitemapLoader extends base_loader_js_1.BaseLoader {
         });
         this.url = url;
     }
-    async *getChunks() {
+    async *getUnfilteredChunks() {
         try {
             // @ts-ignore
             const { sites } = await new sitemapper_1.default({ url: this.url, timeout: 15000 }).fetch();
             this.debug(`Sitemap '${this.url}' returned ${sites.length} URLs`);
             for (const url of sites) {
-                const webLoader = new web_loader_js_1.WebLoader({ url });
-                for await (const chunk of webLoader.getChunks()) {
+                const webLoader = new web_loader_js_1.WebLoader({
+                    urlOrContent: url,
+                    chunkSize: this.chunkSize,
+                    chunkOverlap: this.chunkOverlap,
+                });
+                for await (const chunk of webLoader.getUnfilteredChunks()) {
                     yield {
                         ...chunk,
                         metadata: {

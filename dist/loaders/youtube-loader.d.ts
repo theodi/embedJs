@@ -4,12 +4,13 @@ export declare class YoutubeLoader extends BaseLoader<{
 }> {
     private readonly debug;
     private readonly videoIdOrUrl;
-    constructor({ videoIdOrUrl }: {
+    constructor({ videoIdOrUrl, chunkSize, chunkOverlap, }: {
         videoIdOrUrl: string;
+        chunkSize?: number;
+        chunkOverlap?: number;
     });
-    getChunks(): AsyncGenerator<{
+    getUnfilteredChunks(): AsyncGenerator<{
         pageContent: string;
-        contentHash: string;
         metadata: {
             type: "YoutubeLoader";
             source: string;
