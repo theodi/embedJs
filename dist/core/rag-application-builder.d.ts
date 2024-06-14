@@ -37,5 +37,6 @@ export declare class RAGApplicationBuilder {
     getCache(): BaseCache;
     getEmbeddingModel(): BaseEmbeddings;
     getModel(): BaseModel;
+    setConversations(conversations: BaseConversations): this;
     getConversations(): BaseConversations;
 }

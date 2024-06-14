@@ -134,6 +134,11 @@ export class RAGApplicationBuilder {
         return this.model;
     }
 
+    setConversations(conversations: BaseConversations) {
+        this.conversations = conversations;
+        return this;
+    }
+
     getConversations() {
         return this.conversations;
     }

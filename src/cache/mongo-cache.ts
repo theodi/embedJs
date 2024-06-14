@@ -19,7 +19,11 @@ export class MongoCache implements BaseCache {
 
         // Create index on loaderId field
         const collection = this.client.db(this.dbName).collection(this.collectionName);
-        await collection.createIndex({ loaderId: 1 });
+        try {
+            await collection.createIndex({ loaderId: 1 }, { unique: true });
+        } catch (error: any) {
+            //this.debug('Index on loaderId already exists.');
+        }
     }
 
     async addLoader(loaderId: string, chunkCount: number): Promise<void> {
@@ -41,7 +45,15 @@ export class MongoCache implements BaseCache {
 
     async loaderCustomSet<T extends Record<string, unknown>>(loaderCombinedId: string, value: T): Promise<void> {
         const collection = this.client.db(this.dbName).collection(this.collectionName);
-        await collection.insertOne({ loaderId: loaderCombinedId, value });
+        const result = await collection.updateOne(
+            { loaderId: loaderCombinedId },
+            { $setOnInsert: { loaderId: loaderCombinedId, value } },
+            { upsert: false }
+        );
+
+        if (result.matchedCount === 0) {
+            await collection.insertOne({ loaderId: loaderCombinedId, value });
+        }
     }
 
     async loaderCustomGet<T extends Record<string, unknown>>(loaderCombinedId: string): Promise<T> {

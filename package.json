@@ -203,6 +203,11 @@
             "import": "./dist/vectorDb/weaviate-db.js",
             "require": "./dist/vectorDb/weaviate-db.cjs"
         },
+        "./vectorDb/mongo": {
+            "types": "./dist/vectorDb/mongo-db.d.ts",
+            "import": "./dist/vectorDb/mongo-db.js",
+            "require": "./dist/vectorDb/mongo-db.cjs"
+        },
         "./cache/lmdb": {
             "types": "./dist/cache/lmdb-cache.d.ts",
             "import": "./dist/cache/lmdb-cache.js",

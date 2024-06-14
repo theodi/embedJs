@@ -156,6 +156,10 @@ export class RAGApplicationBuilder {
     getModel() {
         return this.model;
     }
+    setConversations(conversations) {
+        this.conversations = conversations;
+        return this;
+    }
     getConversations() {
         return this.conversations;
     }

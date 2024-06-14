@@ -34,7 +34,12 @@ export class MongoCache {
         await this.client.connect();
         // Create index on loaderId field
         const collection = this.client.db(this.dbName).collection(this.collectionName);
-        await collection.createIndex({ loaderId: 1 });
+        try {
+            await collection.createIndex({ loaderId: 1 }, { unique: true });
+        }
+        catch (error) {
+            //this.debug('Index on loaderId already exists.');
+        }
     }
     async addLoader(loaderId, chunkCount) {
         const collection = this.client.db(this.dbName).collection(this.collectionName);
@@ -52,7 +57,10 @@ export class MongoCache {
     }
     async loaderCustomSet(loaderCombinedId, value) {
         const collection = this.client.db(this.dbName).collection(this.collectionName);
-        await collection.insertOne({ loaderId: loaderCombinedId, value });
+        const result = await collection.updateOne({ loaderId: loaderCombinedId }, { $setOnInsert: { loaderId: loaderCombinedId, value } }, { upsert: false });
+        if (result.matchedCount === 0) {
+            await collection.insertOne({ loaderId: loaderCombinedId, value });
+        }
     }
     async loaderCustomGet(loaderCombinedId) {
         const collection = this.client.db(this.dbName).collection(this.collectionName);
