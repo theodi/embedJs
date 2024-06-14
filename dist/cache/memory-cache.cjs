@@ -38,9 +38,6 @@ class MemoryCache {
     async loaderCustomHas(loaderCombinedId) {
         return this.loaderCustomValues.hasOwnProperty(loaderCombinedId);
     }
-    async clear() {
-        throw new Error('Method not implemented.');
-    }
     async deleteLoader(loaderId) {
         delete this.loaderList[loaderId];
     }

@@ -44,10 +44,6 @@ export class RedisCache implements BaseCache {
         return !!(await this.redis.get(loaderCombinedId));
     }
 
-    async clear(): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
     async deleteLoader(loaderId: string): Promise<void> {
         await this.redis.del(loaderId);
     }

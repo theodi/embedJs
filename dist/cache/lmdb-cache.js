@@ -39,9 +39,6 @@ export class LmdbCache {
     async loaderCustomHas(loaderCombinedId) {
         return this.database.doesExist(loaderCombinedId);
     }
-    async clear() {
-        await this.database.clearAsync();
-    }
     async deleteLoader(loaderId) {
         await this.database.remove(loaderId);
     }

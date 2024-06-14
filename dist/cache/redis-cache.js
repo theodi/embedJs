@@ -43,9 +43,6 @@ export class RedisCache {
     async loaderCustomHas(loaderCombinedId) {
         return !!(await this.redis.get(loaderCombinedId));
     }
-    async clear() {
-        throw new Error('Method not implemented.');
-    }
     async deleteLoader(loaderId) {
         await this.redis.del(loaderId);
     }

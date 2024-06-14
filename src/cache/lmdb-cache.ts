@@ -40,10 +40,6 @@ export class LmdbCache implements BaseCache {
         return this.database.doesExist(loaderCombinedId);
     }
 
-    async clear(): Promise<void> {
-        await this.database.clearAsync();
-    }
-
     async deleteLoader(loaderId: string): Promise<void> {
         await this.database.remove(loaderId);
     }
